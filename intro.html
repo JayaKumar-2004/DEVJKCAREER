@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>System Boot | Live Environment</title>
+    <title>System Boot | Living City</title>
     <style>
         /* --- GLOBAL RESET & DYNAMIC THEME VARIABLES --- */
         * {
@@ -14,36 +14,51 @@
         }
         
         :root {
-            /* Default to Night Theme */
+            /* Default: Night Theme */
             --sky-top: #020111;
-            --sky-bottom: #20124d;
+            --sky-bottom: #140b2e;
             --celestial-color: #f4f6ff; /* Moon */
             --celestial-shadow: 0 0 40px #f4f6ff, 0 0 100px #f4f6ff;
-            --celestial-y: 20vh;
-            --landscape-color: #050510;
-            --cloud-opacity: 0.3;
+            --celestial-y: 16vh;
+            --building-color: #060810;
+            --window-color1: #ffd700; /* Warm Gold Glow */
+            --window-color2: #00f3ff; /* Cyberpunk Cyan Glow */
+            --window-opacity: 0.85;
+            --road-color: #08080a;
+            --cloud-opacity: 0.25;
+            --traffic-opacity: 1;
         }
 
         /* Morning / Day Theme */
         body.theme-day {
-            --sky-top: #56CCF2;
-            --sky-bottom: #2F80ED;
+            --sky-top: #3aacf8;
+            --sky-bottom: #9ae5ff;
             --celestial-color: #FFD700; /* Sun */
             --celestial-shadow: 0 0 60px #FFD700, 0 0 120px #FF8C00;
-            --celestial-y: 15vh;
-            --landscape-color: #0c1e14;
-            --cloud-opacity: 0.8;
+            --celestial-y: 12vh;
+            --building-color: #122030;
+            --window-color1: #a0c8f0; /* Tinted Daylight Glass */
+            --window-color2: #c0e0ff;
+            --window-opacity: 0.4;
+            --road-color: #1c222c;
+            --cloud-opacity: 0.85;
+            --traffic-opacity: 0.4;
         }
 
         /* Sunset Theme */
         body.theme-sunset {
-            --sky-top: #8A2387;
-            --sky-bottom: #E94057;
-            --celestial-color: #FF512F; /* Setting Sun */
-            --celestial-shadow: 0 0 50px #FF512F, 0 0 100px #F09819;
-            --celestial-y: 55vh;
-            --landscape-color: #1a0b12;
-            --cloud-opacity: 0.6;
+            --sky-top: #5e1358;
+            --sky-bottom: #fa5252;
+            --celestial-color: #FF4500; /* Setting Sun */
+            --celestial-shadow: 0 0 50px #FF4500, 0 0 100px #FF8C00;
+            --celestial-y: 50vh;
+            --building-color: #180a14;
+            --window-color1: #ffae00; /* Orange Evening Glow */
+            --window-color2: #ff5200;
+            --window-opacity: 0.7;
+            --road-color: #120b10;
+            --cloud-opacity: 0.65;
+            --traffic-opacity: 0.8;
         }
 
         body {
@@ -54,30 +69,27 @@
             width: 100vw;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
+            padding-top: 10vh; /* Keeps HUD positioned cleanly in upper-middle sky */
             position: relative;
             transition: background 2s ease-in-out;
         }
 
-        /* --- LIVE ENVIRONMENT LAYER --- */
-        .environment-wrapper {
+        /* --- SKY & CELESTIAL LAYER --- */
+        .sky-layer {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
             z-index: 1;
             overflow: hidden;
         }
 
-        /* Sun / Moon */
         .celestial-body {
             position: absolute;
             left: 50%;
             top: var(--celestial-y);
             transform: translateX(-50%);
-            width: 100px;
-            height: 100px;
+            width: 85px; height: 85px;
             border-radius: 50%;
             background: var(--celestial-color);
             box-shadow: var(--celestial-shadow);
@@ -85,32 +97,25 @@
             z-index: 2;
         }
 
-        /* Twinkling Stars (Only visible at night) */
+        /* Twinkling Stars (Night Only) */
         .stars {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: transparent;
+            top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1;
             opacity: 0;
             transition: opacity 2s;
         }
         body.theme-night .stars { opacity: 1; }
         
-        /* Generating random stars using box-shadow trick */
         .stars::after {
             content: '';
             position: absolute;
-            width: 2px;
-            height: 2px;
+            width: 2px; height: 2px;
             background: transparent;
             box-shadow: 
-                10vw 10vh #fff, 20vw 20vh #fff, 30vw 5vh #fff, 40vw 40vh #fff, 
-                50vw 15vh #fff, 60vw 30vh #fff, 70vw 10vh #fff, 80vw 45vh #fff, 
-                90vw 25vh #fff, 15vw 50vh #fff, 25vw 70vh #fff, 35vw 60vh #fff,
-                45vw 80vh #fff, 65vw 65vh #fff, 75vw 85vh #fff, 85vw 75vh #fff;
+                10vw 10vh #fff, 20vw 20vh #fff, 30vw 5vh #fff, 40vw 35vh #fff, 
+                50vw 15vh #fff, 60vw 28vh #fff, 70vw 10vh #fff, 80vw 40vh #fff, 
+                90vw 22vh #fff, 15vw 45vh #fff, 25vw 30vh #fff, 85vw 15vh #fff;
             animation: twinkle 3s infinite alternate;
         }
 
@@ -119,13 +124,10 @@
             100% { opacity: 1; }
         }
 
-        /* Moving Clouds (Pure CSS) */
+        /* Drifting Clouds */
         .clouds {
             position: absolute;
-            top: 15%;
-            left: 0;
-            width: 200vw;
-            height: 100%;
+            top: 15%; left: 0; width: 200vw; height: 100%;
             z-index: 3;
             opacity: var(--cloud-opacity);
             transition: opacity 2s;
@@ -138,55 +140,168 @@
             border-radius: 50px;
             filter: blur(2px);
         }
+        .cloud::before, .cloud::after { content: ''; position: absolute; background: #fff; border-radius: 50%; }
 
-        .cloud::before, .cloud::after {
-            content: '';
-            position: absolute;
-            background: #fff;
-            border-radius: 50%;
-        }
+        .cloud-1 { top: 8%; width: 110px; height: 35px; animation: floatCloud 45s linear infinite; }
+        .cloud-1::before { width: 45px; height: 45px; top: -20px; left: 15px; }
+        .cloud-1::after { width: 35px; height: 35px; top: -10px; left: 55px; }
 
-        .cloud-1 {
-            top: 10%; width: 120px; height: 40px;
-            animation: floatCloud 45s linear infinite;
-        }
-        .cloud-1::before { width: 50px; height: 50px; top: -20px; left: 15px; }
-        .cloud-1::after { width: 40px; height: 40px; top: -10px; left: 60px; }
-
-        .cloud-2 {
-            top: 25%; width: 180px; height: 60px;
-            animation: floatCloud 60s linear infinite reverse;
-        }
-        .cloud-2::before { width: 80px; height: 80px; top: -40px; left: 20px; }
-        .cloud-2::after { width: 60px; height: 60px; top: -20px; left: 90px; }
-
-        .cloud-3 {
-            top: 15%; width: 100px; height: 30px;
-            animation: floatCloud 35s linear infinite;
-        }
-        .cloud-3::before { width: 40px; height: 40px; top: -15px; left: 15px; }
-        .cloud-3::after { width: 30px; height: 30px; top: -10px; left: 45px; }
+        .cloud-2 { top: 22%; width: 160px; height: 50px; animation: floatCloud 60s linear infinite reverse; }
+        .cloud-2::before { width: 70px; height: 70px; top: -35px; left: 20px; }
+        .cloud-2::after { width: 50px; height: 50px; top: -18px; left: 80px; }
 
         @keyframes floatCloud {
-            0% { transform: translateX(-20vw); }
+            0% { transform: translateX(-30vw); }
             100% { transform: translateX(120vw); }
         }
 
-        /* Landscape Silhouette (Vector Style) */
-        .landscape-silhouette {
+        /* --- CITY SKYLINE WITH LIT WINDOWS --- */
+        .city-skyline {
             position: absolute;
-            bottom: 0;
+            bottom: 11vh; /* Sits directly on top of the road */
             left: 0;
             width: 100vw;
-            height: 35vh;
+            height: 45vh;
             z-index: 4;
-            background: var(--landscape-color);
-            transition: background 2s ease-in-out;
-            clip-path: polygon(
-                0% 100%, 100% 100%, 100% 60%, 
-                85% 45%, 75% 65%, 60% 30%, 
-                45% 55%, 30% 40%, 15% 70%, 0% 50%
-            );
+            pointer-events: none;
+        }
+
+        .building {
+            position: absolute;
+            bottom: 0;
+            background: var(--building-color);
+            border-top: 2px solid rgba(255,255,255,0.15);
+            transition: background 2s;
+        }
+
+        /* Building Window Grids using CSS linear gradients */
+        .building::before {
+            content: '';
+            position: absolute;
+            top: 8px; left: 6px; right: 6px; bottom: 8px;
+            background-size: 8px 14px;
+            opacity: var(--window-opacity);
+            transition: opacity 2s;
+        }
+
+        /* Individual Building Shapes & Window Colors */
+        .b1 { left: 2vw; width: 18vw; height: 28vh; }
+        .b1::before {
+            background-image: 
+                linear-gradient(to right, var(--window-color1) 4px, transparent 4px),
+                linear-gradient(to bottom, var(--window-color1) 8px, transparent 8px);
+        }
+
+        .b2 { left: 18vw; width: 22vw; height: 42vh; z-index: 5; }
+        .b2::before {
+            background-image: 
+                linear-gradient(to right, var(--window-color2) 3px, transparent 3px),
+                linear-gradient(to bottom, var(--window-color2) 10px, transparent 10px);
+            background-size: 10px 18px;
+        }
+
+        .b3 { left: 38vw; width: 25vw; height: 32vh; }
+        .b3::before {
+            background-image: 
+                linear-gradient(to right, var(--window-color1) 5px, transparent 5px),
+                linear-gradient(to bottom, var(--window-color1) 6px, transparent 6px);
+            background-size: 12px 14px;
+        }
+
+        .b4 { left: 60vw; width: 20vw; height: 46vh; z-index: 5; }
+        .b4::before {
+            background-image: 
+                linear-gradient(to right, var(--window-color2) 4px, transparent 4px),
+                linear-gradient(to bottom, var(--window-color2) 8px, transparent 8px);
+        }
+
+        .b5 { left: 78vw; width: 20vw; height: 24vh; }
+        .b5::before {
+            background-image: 
+                linear-gradient(to right, var(--window-color1) 3px, transparent 3px),
+                linear-gradient(to bottom, var(--window-color1) 6px, transparent 6px);
+        }
+
+        /* --- THE HIGHWAY & MOVING TRAFFIC --- */
+        .highway {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100vw; height: 11vh;
+            background: var(--road-color);
+            border-top: 3px solid #2a2e3d;
+            box-shadow: 0 -10px 25px rgba(0,0,0,0.8);
+            z-index: 6;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Dashed Road Centerline */
+        .road-line {
+            position: absolute;
+            top: 50%; left: 0;
+            width: 200vw; height: 3px;
+            background: repeating-linear-gradient(90deg, #ffd700 0px, #ffd700 35px, transparent 35px, transparent 70px);
+            transform: translateY(-50%);
+            animation: driveRoad 0.6s linear infinite;
+        }
+
+        @keyframes driveRoad {
+            0% { transform: translate3d(0, -50%, 0); }
+            100% { transform: translate3d(-70px, -50%, 0); }
+        }
+
+        /* Moving Car Light Streaks */
+        .traffic-stream {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: var(--traffic-opacity);
+            transition: opacity 2s;
+        }
+
+        .light-streak {
+            position: absolute;
+            height: 4px;
+            border-radius: 4px;
+            filter: drop-shadow(0 0 6px currentColor);
+            will-change: transform;
+        }
+
+        /* Headlights moving Right to Left */
+        .headlight-1 {
+            top: 25%; width: 70px;
+            background: linear-gradient(90deg, transparent, #fff, #00f3ff);
+            color: #00f3ff;
+            animation: zoomLeft 2.2s linear infinite;
+        }
+        .headlight-2 {
+            top: 35%; width: 100px;
+            background: linear-gradient(90deg, transparent, #fff, #a8fffb);
+            color: #fff;
+            animation: zoomLeft 3.5s linear infinite 1s;
+        }
+
+        /* Red Taillights moving Left to Right */
+        .taillight-1 {
+            bottom: 30%; width: 90px;
+            background: linear-gradient(90deg, #ff003c, #ff5200, transparent);
+            color: #ff003c;
+            animation: zoomRight 2.8s linear infinite 0.5s;
+        }
+        .taillight-2 {
+            bottom: 20%; width: 60px;
+            background: linear-gradient(90deg, #ff0055, #ff0000, transparent);
+            color: #ff0000;
+            animation: zoomRight 1.9s linear infinite 1.5s;
+        }
+
+        @keyframes zoomLeft {
+            0% { transform: translate3d(110vw, 0, 0); }
+            100% { transform: translate3d(-150px, 0, 0); }
+        }
+        @keyframes zoomRight {
+            0% { transform: translate3d(-150px, 0, 0); }
+            100% { transform: translate3d(110vw, 0, 0); }
         }
 
         /* --- GLASSMORPHIC HUD CONSOLE --- */
@@ -195,14 +310,14 @@
             z-index: 10;
             width: 90%;
             max-width: 440px;
-            min-height: 320px;
-            background: rgba(4, 8, 14, 0.65); /* Dark adaptive glass */
+            min-height: 310px;
+            background: rgba(6, 10, 18, 0.75);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(0, 243, 255, 0.3);
             border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,255,255,0.05);
-            padding: 25px 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7), inset 0 0 20px rgba(0, 243, 255, 0.1);
+            padding: 24px 18px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -219,13 +334,13 @@
             text-shadow: 0 2px 5px rgba(0, 0, 0, 0.9);
         }
 
-        .highlight-accent { color: #00f3ff; text-shadow: 0 0 10px rgba(0, 243, 255, 0.6); }
+        .highlight-cyan { color: #00f3ff; text-shadow: 0 0 10px rgba(0, 243, 255, 0.6); }
         .highlight-white { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.8); }
 
         .hidden { display: none !important; }
         
         .fade-in {
-            animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         @keyframes fadeIn {
@@ -242,7 +357,7 @@
         }
 
         .name-primary {
-            font-size: 1.8rem;
+            font-size: 1.75rem;
             color: #ffffff;
             font-weight: 900;
             letter-spacing: 2px;
@@ -275,7 +390,7 @@
             border-radius: 6px;
         }
 
-        .tag-accent {
+        .tag-cyan {
             border-color: #00f3ff;
             background: rgba(0, 243, 255, 0.15);
             color: #00f3ff;
@@ -286,63 +401,72 @@
             font-size: 1.05rem;
             color: #ffffff;
             font-weight: 800;
-            margin-top: 10px;
+            margin-top: 8px;
             letter-spacing: 1.5px;
             text-transform: uppercase;
         }
 
-        /* --- ENVIRONMENTAL FADEOUT EXIT ANIMATION --- */
-        .environment-exit {
+        /* --- WARP EXIT ANIMATION --- */
+        .city-exit {
             animation: fadeOut 0.8s forwards;
         }
 
         @keyframes fadeOut {
             0% { opacity: 1; filter: brightness(1); }
-            100% { opacity: 0; filter: brightness(3) blur(10px); transform: scale(1.1); }
+            100% { opacity: 0; filter: brightness(4) blur(12px); transform: scale(1.1); }
         }
     </style>
 </head>
-<body class="theme-night" id="dynamic-body"> <!-- Default, replaced by JS -->
+<body class="theme-night" id="dynamic-body">
 
-    <!-- Live Environment Elements -->
-    <div class="environment-wrapper">
+    <div class="sky-layer">
         <div class="stars"></div>
         <div class="celestial-body"></div>
-        
         <div class="clouds">
             <div class="cloud cloud-1" style="left: -10vw;"></div>
             <div class="cloud cloud-2" style="left: 40vw;"></div>
-            <div class="cloud cloud-3" style="left: 80vw;"></div>
         </div>
-
-        <div class="landscape-silhouette"></div>
     </div>
 
-    <!-- Glassmorphic HUD Console -->
+    <div class="city-skyline">
+        <div class="building b1"></div>
+        <div class="building b2"></div>
+        <div class="building b3"></div>
+        <div class="building b4"></div>
+        <div class="building b5"></div>
+    </div>
+
+    <div class="highway">
+        <div class="road-line"></div>
+        <div class="traffic-stream">
+            <div class="light-streak headlight-1"></div>
+            <div class="light-streak headlight-2"></div>
+            <div class="light-streak taillight-1"></div>
+            <div class="light-streak taillight-2"></div>
+        </div>
+    </div>
+
     <div class="hud-box" id="hud">
         
-        <!-- Step 1: Network & Time Sync -->
         <div id="step-sync" class="text-line">
-            <div class="highlight-accent" style="font-size: 1.25rem; margin-bottom: 10px;">[ ENVIRONMENT SYNC ]</div>
+            <div class="highlight-cyan" style="font-size: 1.25rem; margin-bottom: 10px;">[ ENVIRONMENT SYNC ]</div>
             <div>> LOCAL TIME DETECTED...</div>
             <div style="margin-top: 8px;">DATE: <span id="clock-date" class="highlight-white"></span></div>
             <div>TIME: <span id="clock-time" class="highlight-white"></span></div>
         </div>
 
-        <!-- Step 2: Personalized AI Greeting -->
         <div id="step-greet" class="hidden text-line">
             <div class="highlight-white" style="font-size: 1.05rem; margin-bottom: 10px;">[ PRESENCE VERIFIED ]</div>
-            <div id="dynamic-greeting" class="highlight-accent" style="font-size: 1.2rem; line-height: 1.5;"></div>
+            <div id="dynamic-greeting" class="highlight-cyan" style="font-size: 1.2rem; line-height: 1.5;"></div>
         </div>
 
-        <!-- Step 3: Grand Name & Identity Reveal -->
         <div id="step-identity" class="hidden identity-container">
             <div class="name-primary">JAYA KUMAR</div>
             <div class="name-secondary">( S JAYA KUMAR )</div>
             
             <div class="aliases-wrapper">
                 <span class="tag">STARK DEV</span>
-                <span class="tag tag-accent">JACK</span>
+                <span class="tag tag-cyan">JACK</span>
             </div>
             
             <div class="role-title">FULL-STACK DEVELOPER</div>
@@ -378,27 +502,23 @@
                 body.classList.remove('theme-day', 'theme-sunset', 'theme-night');
 
                 if (currentHour >= 6 && currentHour < 16) {
-                    // 6 AM to 4 PM: Bright Day
                     body.classList.add('theme-day');
                     timeOfDay = "morning";
                     if (currentHour >= 12) timeOfDay = "afternoon";
                 } 
                 else if (currentHour >= 16 && currentHour < 19) {
-                    // 4 PM to 7 PM: Golden Hour Sunset
                     body.classList.add('theme-sunset');
                     timeOfDay = "evening";
                 } 
                 else {
-                    // 7 PM to 6 AM: Night time
                     body.classList.add('theme-night');
                     timeOfDay = "evening";
-                    if(currentHour >= 0 && currentHour < 6) timeOfDay = "morning"; // Late night/early morning
+                    if(currentHour >= 0 && currentHour < 6) timeOfDay = "morning";
                 }
 
                 return timeOfDay;
             }
 
-            // Set initial theme and clock, then update every second
             let greetingTime = runClockAndTheme();
             setInterval(runClockAndTheme, 1000);
 
@@ -411,28 +531,22 @@
             const stepGreet = document.getElementById('step-greet');
             const stepIdentity = document.getElementById('step-identity');
 
-            // 0.0s to 2.5s: Time & Environment Sync displays
-            
-            // 2.5s to 4.5s: Dynamic Greeting
             setTimeout(() => {
                 stepSync.classList.add('hidden');
                 stepGreet.classList.remove('hidden');
                 stepGreet.classList.add('fade-in');
             }, 2500);
 
-            // 4.5s to 6.2s: Grand Name & Identity Reveal
             setTimeout(() => {
                 stepGreet.classList.add('hidden');
                 stepIdentity.classList.remove('hidden');
                 stepIdentity.classList.add('fade-in');
             }, 4500);
 
-            // 6.2s to 7.0s: Environmental Fadeout Transition
             setTimeout(() => {
-                document.body.classList.add('environment-exit');
+                document.body.classList.add('city-exit');
             }, 6200);
 
-            // 7.0s: Automatic Redirect to Main Landing Page
             setTimeout(() => {
                 window.location.href = 'home.html'; 
             }, 7000);
