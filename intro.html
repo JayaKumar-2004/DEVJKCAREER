@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>System Boot | Living City</title>
+    <title>System Boot | Cinematic City</title>
     <style>
         /* --- GLOBAL RESET & DYNAMIC THEME VARIABLES --- */
         * {
@@ -18,46 +18,49 @@
             --sky-top: #03040e;
             --sky-bottom: #12102b;
             --celestial-color: #f4f6ff; 
-            --celestial-shadow: 0 0 30px #f4f6ff, 0 0 80px rgba(244, 246, 255, 0.5);
+            --celestial-shadow: 0 0 40px #f4f6ff, 0 0 100px rgba(244, 246, 255, 0.5);
             --building-bg: linear-gradient(to bottom, #060810 0%, #020305 100%);
             --window-color1: rgba(255, 215, 0, 0.85); /* Gold */
             --window-color2: rgba(0, 243, 255, 0.85); /* Cyan */
-            --road-color: #050608;
+            --road-color: #0b0c10;
+            --lamp-glow: 0 0 15px #ffdd88, 0 0 30px #ffdd88;
+            --lamp-bulb: #ffdd88;
             --cloud-opacity: 0.25;
-            --traffic-opacity: 1;
         }
 
         body.theme-day {
             --sky-top: #209ced;
             --sky-bottom: #7dd0ff;
             --celestial-color: #FFD700; 
-            --celestial-shadow: 0 0 50px #FFD700, 0 0 100px #FF8C00;
+            --celestial-shadow: 0 0 60px #FFD700, 0 0 120px #FF8C00;
             --building-bg: linear-gradient(to bottom, #111a26 0%, #0a1017 100%);
-            --window-color1: rgba(160, 200, 240, 0.4); 
-            --window-color2: rgba(192, 224, 255, 0.4);
-            --road-color: #151a22;
+            --window-color1: rgba(160, 200, 240, 0.5); 
+            --window-color2: rgba(192, 224, 255, 0.5);
+            --road-color: #1a1e24;
+            --lamp-glow: 0 0 5px rgba(255,255,255,0.2);
+            --lamp-bulb: #e0e0e0;
             --cloud-opacity: 0.9;
-            --traffic-opacity: 0.3;
         }
 
         body.theme-sunset {
-            --sky-top: #4a154b;
-            --sky-bottom: #e64949;
-            --celestial-color: #ff5e00; 
-            --celestial-shadow: 0 0 50px #ff5e00, 0 0 90px #ff9d00;
+            --sky-top: #3b123d;
+            --sky-bottom: #d63c3c;
+            --celestial-color: #ff6a00; 
+            --celestial-shadow: 0 0 60px #ff6a00, 0 0 110px #ff9d00;
             --building-bg: linear-gradient(to bottom, #170912 0%, #0a0408 100%);
-            --window-color1: rgba(255, 174, 0, 0.7); 
-            --window-color2: rgba(255, 81, 0, 0.7);
-            --road-color: #0f090d;
+            --window-color1: rgba(255, 174, 0, 0.75); 
+            --window-color2: rgba(255, 81, 0, 0.75);
+            --road-color: #120a0e;
+            --lamp-glow: 0 0 15px #ffaa00, 0 0 25px #ffaa00;
+            --lamp-bulb: #ffaa00;
             --cloud-opacity: 0.7;
-            --traffic-opacity: 0.8;
         }
 
         body {
             background: linear-gradient(to bottom, var(--sky-top), var(--sky-bottom));
             color: #ffffff;
             overflow: hidden;
-            height: 100dvh; /* Fixes mobile browser bar overlap */
+            height: 100dvh; 
             width: 100vw;
             display: flex;
             justify-content: center;
@@ -67,7 +70,7 @@
             transition: background 2s ease-in-out;
         }
 
-        /* --- SKY & CELESTIAL LAYER --- */
+        /* --- SKY, FLIGHTS & CELESTIAL LAYER --- */
         .sky-layer {
             position: absolute;
             top: 0; left: 0;
@@ -78,24 +81,18 @@
 
         .celestial-body {
             position: absolute;
-            left: 50%;
-            top: 12vh;
+            left: 50%; top: 12vh;
             transform: translateX(-50%);
-            width: 70px; height: 70px;
+            width: 75px; height: 75px;
             border-radius: 50%;
             background: var(--celestial-color);
             box-shadow: var(--celestial-shadow);
-            transition: all 2s ease-in-out;
             z-index: 2;
         }
 
         /* Twinkling Stars */
         .stars {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1;
-            opacity: 0;
-            transition: opacity 2s;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0; transition: opacity 2s;
         }
         body.theme-night .stars { opacity: 1; }
         .stars::after {
@@ -103,161 +100,212 @@
             box-shadow: 
                 10vw 10vh #fff, 20vw 25vh #fff, 30vw 5vh #fff, 40vw 30vh #fff, 
                 50vw 15vh #fff, 60vw 22vh #fff, 70vw 8vh #fff, 80vw 35vh #fff, 
-                85vw 15vh #fff, 15vw 40vh #fff, 25vw 20vh #fff;
+                85vw 15vh #fff, 15vw 40vh #fff, 25vw 20vh #fff, 90vw 28vh #fff;
             animation: twinkle 4s infinite alternate;
         }
-
         @keyframes twinkle { 0% { opacity: 0.2; } 100% { opacity: 1; } }
 
-        /* --- CITY SKYLINE (PROPER WINDOWS) --- */
+        /* Drifting Clouds */
+        .clouds {
+            position: absolute; top: 10%; left: 0; width: 100vw; height: 30vh; z-index: 2; opacity: var(--cloud-opacity); pointer-events: none;
+        }
+        .cloud { position: absolute; background: #fff; border-radius: 50px; filter: blur(3px); }
+        .cloud::before, .cloud::after { content: ''; position: absolute; background: #fff; border-radius: 50%; }
+        .cloud-1 { top: 10%; width: 120px; height: 40px; animation: floatRight 55s linear infinite; }
+        .cloud-1::before { width: 50px; height: 50px; top: -25px; left: 15px; }
+        .cloud-1::after { width: 40px; height: 40px; top: -15px; left: 60px; }
+        .cloud-2 { top: 50%; width: 90px; height: 30px; animation: floatLeft 45s linear infinite; }
+        .cloud-2::before { width: 40px; height: 40px; top: -15px; left: 15px; }
+
+        @keyframes floatRight { 0% { transform: translateX(-20vw); } 100% { transform: translateX(110vw); } }
+        @keyframes floatLeft { 0% { transform: translateX(110vw); } 100% { transform: translateX(-20vw); } }
+
+        /* Commercial Flight (Airplane) */
+        .airplane {
+            position: absolute;
+            top: 20vh; right: -50px;
+            width: 25px; height: 8px;
+            background: #444;
+            border-radius: 50% 50% 50% 50% / 80% 80% 20% 20%;
+            z-index: 3;
+            animation: flyAcross 25s linear infinite;
+        }
+        .airplane::after { /* Blinking Nav Light */
+            content: ''; position: absolute;
+            top: -2px; left: 10px;
+            width: 4px; height: 4px;
+            border-radius: 50%;
+            background: red;
+            box-shadow: 0 0 8px red;
+            animation: blinkFast 1s infinite;
+        }
+        @keyframes flyAcross { 0% { transform: translateX(10vw) scale(0.8); } 100% { transform: translateX(-110vw) scale(1); } }
+        @keyframes blinkFast { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+
+        /* --- CITY SKYLINE & GATES --- */
         .city-skyline {
             position: absolute;
-            bottom: 70px; /* Sits exactly on top of the 70px highway */
-            left: 0;
-            width: 100vw;
-            height: 40vh;
-            z-index: 4;
-            pointer-events: none;
+            bottom: 80px; /* Anchored exactly on top of the road */
+            left: 0; width: 100vw; height: 45vh;
+            z-index: 4; pointer-events: none;
         }
 
         .building {
-            position: absolute;
-            bottom: 0;
+            position: absolute; bottom: 0;
             background: var(--building-bg);
             border-top: 1px solid rgba(255,255,255,0.1);
             border-right: 1px solid rgba(0,0,0,0.5);
             box-shadow: inset -5px 0 15px rgba(0,0,0,0.5);
         }
-
-        /* Using radial gradients for tiny, spaced-out lit windows */
         .building::before {
-            content: '';
-            position: absolute;
-            top: 10px; left: 0; right: 0; bottom: 10px;
+            content: ''; position: absolute; top: 10px; left: 0; right: 0; bottom: 10px;
             background-position: center top;
         }
 
         .b1 { left: 2vw; width: 15vw; height: 25vh; }
-        .b1::before {
-            background-image: radial-gradient(circle, var(--window-color1) 1.5px, transparent 2px);
-            background-size: 14px 20px;
-        }
+        .b1::before { background-image: radial-gradient(circle, var(--window-color1) 1.5px, transparent 2px); background-size: 14px 20px; }
 
         .b2 { left: 16vw; width: 22vw; height: 38vh; z-index: 5; }
-        .b2::before {
-            background-image: radial-gradient(circle, var(--window-color2) 1.5px, transparent 2px);
-            background-size: 18px 24px;
-        }
+        .b2::before { background-image: radial-gradient(circle, var(--window-color2) 1.5px, transparent 2px); background-size: 18px 24px; }
 
-        .b3 { left: 35vw; width: 28vw; height: 28vh; }
-        .b3::before {
-            background-image: radial-gradient(circle, var(--window-color1) 1px, transparent 1.5px);
-            background-size: 12px 18px;
+        .b3 { left: 35vw; width: 28vw; height: 32vh; }
+        .b3::before { background-image: radial-gradient(circle, var(--window-color1) 1px, transparent 1.5px); background-size: 12px 18px; }
+        /* Grand Glowing Entrance Gate for Center Building */
+        .b3::after {
+            content: ''; position: absolute;
+            bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 40px; height: 25px;
+            background: rgba(255, 215, 0, 0.9);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7), inset 0 0 10px #fff;
+            border-radius: 4px 4px 0 0;
+            border-bottom: none;
         }
 
         .b4 { left: 60vw; width: 22vw; height: 42vh; z-index: 5; }
-        .b4::before {
-            background-image: radial-gradient(circle, var(--window-color2) 2px, transparent 2.5px);
-            background-size: 20px 28px;
-        }
+        .b4::before { background-image: radial-gradient(circle, var(--window-color2) 2px, transparent 2.5px); background-size: 20px 28px; }
 
         .b5 { left: 80vw; width: 18vw; height: 20vh; }
-        .b5::before {
-            background-image: radial-gradient(circle, var(--window-color1) 1.5px, transparent 2px);
-            background-size: 16px 22px;
-        }
+        .b5::before { background-image: radial-gradient(circle, var(--window-color1) 1.5px, transparent 2px); background-size: 16px 22px; }
 
-        /* --- THE HIGHWAY & TRAFFIC --- */
+        /* --- THE HIGHWAY, LAMPS & ACTUAL VEHICLES --- */
         .highway {
-            position: absolute;
-            bottom: 0; left: 0;
-            width: 100vw; height: 70px; /* Fixed height, stuck to absolute bottom */
+            position: absolute; bottom: 0; left: 0;
+            width: 100vw; height: 80px; 
             background: var(--road-color);
             border-top: 2px solid #1a1e29;
-            box-shadow: 0 -15px 30px rgba(0,0,0,0.8);
-            z-index: 6;
-            overflow: hidden;
+            box-shadow: 0 -15px 30px rgba(0,0,0,0.9);
+            z-index: 6; overflow: visible;
         }
 
+        /* Street Lamps */
+        .street-lamps {
+            position: absolute; top: -45px; left: 0;
+            width: 100%; height: 45px;
+            display: flex; justify-content: space-around;
+        }
+        .lamp {
+            position: relative; width: 3px; height: 100%; background: #222;
+        }
+        .lamp::before {
+            content: ''; position: absolute; top: -5px; left: -3px;
+            width: 9px; height: 9px; border-radius: 50%;
+            background: var(--lamp-bulb); box-shadow: var(--lamp-glow);
+        }
+
+        /* Dashed Road Line */
         .road-line {
-            position: absolute;
-            top: 50%; left: 0;
-            width: 200vw; height: 2px;
-            background: repeating-linear-gradient(90deg, rgba(255, 215, 0, 0.6) 0px, rgba(255, 215, 0, 0.6) 30px, transparent 30px, transparent 60px);
+            position: absolute; top: 50%; left: 0; width: 200vw; height: 2px;
+            background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0px, rgba(255, 255, 255, 0.4) 30px, transparent 30px, transparent 60px);
             transform: translateY(-50%);
-            animation: driveRoad 0.8s linear infinite;
+            animation: driveRoad 0.7s linear infinite;
         }
-
         @keyframes driveRoad { 100% { transform: translate3d(-60px, -50%, 0); } }
 
-        .traffic-stream {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            opacity: var(--traffic-opacity);
-        }
+        /* Actual Car Bodies with Light Beams */
+        .traffic-stream { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
-        .light-streak {
-            position: absolute; height: 3px; border-radius: 3px;
+        .car {
+            position: absolute; width: 25px; height: 12px;
+            background: #111; border-radius: 4px;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.2);
             will-change: transform;
         }
 
-        .headlight-1 {
-            top: 25px; width: 60px;
-            background: linear-gradient(90deg, transparent, #fff, #00f3ff);
-            box-shadow: 0 0 8px #00f3ff;
-            animation: zoomLeft 2.5s linear infinite;
-        }
-        .taillight-1 {
-            bottom: 25px; width: 80px;
-            background: linear-gradient(90deg, #ff003c, #ff5200, transparent);
-            box-shadow: 0 0 8px #ff003c;
-            animation: zoomRight 2s linear infinite 0.5s;
+        /* Car zooming left (Headlights) */
+        .car-left-1 { top: 15px; animation: zoomLeft 3.5s linear infinite; }
+        .car-left-1::before { /* Headlight Beam */
+            content: ''; position: absolute; top: 2px; left: -40px;
+            width: 40px; height: 8px;
+            background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.8));
+            border-radius: 50%;
         }
 
-        @keyframes zoomLeft { 0% { transform: translate3d(120vw, 0, 0); } 100% { transform: translate3d(-100px, 0, 0); } }
-        @keyframes zoomRight { 0% { transform: translate3d(-100px, 0, 0); } 100% { transform: translate3d(120vw, 0, 0); } }
+        .car-left-2 { top: 20px; animation: zoomLeft 2.2s linear infinite 1.5s; }
+        .car-left-2::before {
+            content: ''; position: absolute; top: 2px; left: -50px;
+            width: 50px; height: 8px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9));
+        }
 
-        /* --- HUD CONSOLE --- */
+        /* Car zooming right (Taillights) */
+        .car-right-1 { bottom: 15px; animation: zoomRight 2.8s linear infinite 0.5s; }
+        .car-right-1::after { /* Red Taillight Glow */
+            content: ''; position: absolute; top: 2px; right: -25px;
+            width: 25px; height: 8px;
+            background: linear-gradient(-90deg, transparent, rgba(255, 0, 60, 0.9));
+        }
+
+        @keyframes zoomLeft { 0% { transform: translate3d(110vw, 0, 0); } 100% { transform: translate3d(-100px, 0, 0); } }
+        @keyframes zoomRight { 0% { transform: translate3d(-100px, 0, 0); } 100% { transform: translate3d(110vw, 0, 0); } }
+
+        /* --- HUD CONSOLE (MINIMAL & FOCUSED) --- */
         .hud-box {
             position: relative;
             z-index: 10;
-            width: 90%; max-width: 440px; min-height: 280px;
-            background: rgba(6, 10, 18, 0.85);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 243, 255, 0.3);
+            width: 90%; max-width: 440px; min-height: 240px;
+            background: rgba(4, 7, 12, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 243, 255, 0.25);
             border-radius: 12px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(0, 243, 255, 0.1);
-            padding: 24px 18px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(0, 243, 255, 0.1);
+            padding: 24px 20px;
             display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
         }
 
-        .text-line { font-size: 1.1rem; font-weight: bold; line-height: 1.6; margin: 6px 0; text-shadow: 0 2px 5px rgba(0,0,0,0.9); }
-        .highlight-cyan { color: #00f3ff; text-shadow: 0 0 10px rgba(0,243,255,0.6); }
+        .text-line { font-size: 1.15rem; font-weight: bold; line-height: 1.6; margin: 4px 0; text-shadow: 0 2px 5px rgba(0,0,0,0.9); }
+        .highlight-cyan { color: #00f3ff; text-shadow: 0 0 12px rgba(0,243,255,0.6); }
         .highlight-white { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.8); }
+        
         .hidden { display: none !important; }
-        .fade-in { animation: fadeIn 0.4s forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .fade-in { animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .name-primary { font-size: 1.75rem; color: #ffffff; font-weight: 900; letter-spacing: 2px; }
-        .name-secondary { font-size: 1.15rem; color: #00f3ff; font-weight: bold; }
-        .aliases-wrapper { display: flex; justify-content: center; gap: 8px; margin: 8px 0; flex-wrap: wrap; }
-        .tag { padding: 4px 12px; border: 1px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.1); color: #fff; font-size: 0.9rem; font-weight: bold; border-radius: 6px; }
+        .name-primary { font-size: 1.8rem; color: #ffffff; font-weight: 900; letter-spacing: 2px; }
+        .name-secondary { font-size: 1.2rem; color: #00f3ff; font-weight: bold; }
+        .aliases-wrapper { display: flex; justify-content: center; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
+        .tag { padding: 4px 12px; border: 1px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.1); color: #fff; font-size: 0.95rem; font-weight: bold; border-radius: 4px; }
         .tag-cyan { border-color: #00f3ff; background: rgba(0,243,255,0.15); color: #00f3ff; }
-        .role-title { font-size: 1.05rem; color: #ffffff; font-weight: 800; margin-top: 8px; letter-spacing: 1.5px; text-transform: uppercase; }
+        .role-title { font-size: 1.1rem; color: #ffffff; font-weight: 800; margin-top: 8px; letter-spacing: 1.5px; text-transform: uppercase; }
 
         .city-exit { animation: fadeOut 0.8s forwards; }
-        @keyframes fadeOut { 100% { opacity: 0; filter: blur(10px); transform: scale(1.1); } }
+        @keyframes fadeOut { 100% { opacity: 0; filter: blur(12px); transform: scale(1.15); } }
     </style>
 </head>
 <body class="theme-night" id="dynamic-body">
 
-    <!-- Sky Layer -->
+    <!-- Sky Layer (Stars, Sun/Moon, Clouds, Flights) -->
     <div class="sky-layer">
         <div class="stars"></div>
         <div class="celestial-body"></div>
+        <div class="clouds">
+            <div class="cloud cloud-1"></div>
+            <div class="cloud cloud-2"></div>
+        </div>
+        <div class="airplane"></div>
     </div>
 
-    <!-- City Skyline Layer -->
+    <!-- City Skyline Layer (Includes glowing gate on b3) -->
     <div class="city-skyline">
         <div class="building b1"></div>
         <div class="building b2"></div>
@@ -266,27 +314,30 @@
         <div class="building b5"></div>
     </div>
 
-    <!-- Highway & Live Traffic -->
+    <!-- Highway, Lamps & Live Vehicle Traffic -->
     <div class="highway">
+        <div class="street-lamps">
+            <div class="lamp"></div><div class="lamp"></div><div class="lamp"></div><div class="lamp"></div><div class="lamp"></div>
+        </div>
         <div class="road-line"></div>
         <div class="traffic-stream">
-            <div class="light-streak headlight-1"></div>
-            <div class="light-streak taillight-1"></div>
+            <div class="car car-left-1"></div>
+            <div class="car car-left-2"></div>
+            <div class="car car-right-1"></div>
         </div>
     </div>
 
-    <!-- Glassmorphic HUD Console -->
+    <!-- Minimal Glassmorphic HUD Console -->
     <div class="hud-box" id="hud">
-        <div id="step-sync" class="text-line">
-            <div class="highlight-cyan" style="font-size: 1.25rem; margin-bottom: 10px;">[ ENVIRONMENT SYNC ]</div>
-            <div>> LOCAL TIME DETECTED...</div>
-            <div style="margin-top: 8px;">DATE: <span id="clock-date" class="highlight-white"></span></div>
-            <div>TIME: <span id="clock-time" class="highlight-white"></span></div>
+        
+        <!-- Step 1: Clean Date, Time, and Greeting -->
+        <div id="step-greet" class="text-line fade-in">
+            <div style="margin-bottom: 5px;">DATE: <span id="clock-date" class="highlight-white"></span></div>
+            <div style="margin-bottom: 12px;">TIME: <span id="clock-time" class="highlight-white"></span></div>
+            <div id="dynamic-greeting" class="highlight-cyan" style="font-size: 1.25rem; line-height: 1.4;"></div>
         </div>
-        <div id="step-greet" class="hidden text-line">
-            <div class="highlight-white" style="font-size: 1.05rem; margin-bottom: 10px;">[ PRESENCE VERIFIED ]</div>
-            <div id="dynamic-greeting" class="highlight-cyan" style="font-size: 1.2rem; line-height: 1.5;"></div>
-        </div>
+        
+        <!-- Step 2: Identity Reveal -->
         <div id="step-identity" class="hidden" style="width: 100%; display: flex; flex-direction: column; gap: 6px;">
             <div class="name-primary">JAYA KUMAR</div>
             <div class="name-secondary">( S JAYA KUMAR )</div>
@@ -329,15 +380,25 @@
 
             let greetingTime = runClockAndTheme();
             setInterval(runClockAndTheme, 1000);
+            
+            // Clean, direct greeting
             document.getElementById('dynamic-greeting').textContent = `> Good ${greetingTime} and welcome to portfolio sir / ma'am.`;
 
-            const stepSync = document.getElementById('step-sync');
             const stepGreet = document.getElementById('step-greet');
             const stepIdentity = document.getElementById('step-identity');
 
-            setTimeout(() => { stepSync.classList.add('hidden'); stepGreet.classList.remove('hidden'); stepGreet.classList.add('fade-in'); }, 2500);
-            setTimeout(() => { stepGreet.classList.add('hidden'); stepIdentity.classList.remove('hidden'); stepIdentity.classList.add('fade-in'); }, 4500);
+            // Simplified 7-Second Sequence
+            // 0s - 3.5s: Show Date, Time, and Greeting
+            setTimeout(() => { 
+                stepGreet.classList.add('hidden'); 
+                stepIdentity.classList.remove('hidden'); 
+                stepIdentity.classList.add('fade-in'); 
+            }, 3500);
+
+            // 6.2s: Trigger cinematic warp exit
             setTimeout(() => { document.body.classList.add('city-exit'); }, 6200);
+
+            // 7.0s: Redirect to landing page
             setTimeout(() => { window.location.href = 'home.html'; }, 7000);
         });
     </script>
