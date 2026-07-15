@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Init | Stark Dev</title>
+    <style>
+        /* --- GLOBAL & RESET --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #030508;
+            color: #00f3ff;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            transition: opacity 0.8s ease-in, filter 0.8s ease-in;
+        }
+
+        /* --- 3D LIVING CORRIDOR BACKGROUND --- */
+        .scene {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            perspective: 800px;
+            z-index: 0;
+        }
+
+        .floor, .ceiling {
+            position: absolute;
+            width: 200vw;
+            height: 200vh;
+            left: -50vw;
+            background-image: 
+                linear-gradient(#ff003c44 1px, transparent 1px),
+                linear-gradient(90deg, #ff003c44 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveGrid 3s linear infinite;
+        }
+
+        .floor {
+            bottom: -50vh;
+            transform: rotateX(80deg);
+            box-shadow: inset 0 0 100px #000;
+        }
+
+        .ceiling {
+            top: -50vh;
+            transform: rotateX(-80deg);
+            background-image: 
+                linear-gradient(#00f3ff44 1px, transparent 1px),
+                linear-gradient(90deg, #00f3ff44 1px, transparent 1px);
+            box-shadow: inset 0 0 100px #000;
+        }
+
+        @keyframes moveGrid {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 50px; }
+        }
+
+        /* --- HUD CONTAINER & HOLOGRAM --- */
+        .hud-container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            background: rgba(3, 5, 8, 0.7);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2), inset 0 0 20px rgba(0, 243, 255, 0.1);
+            text-align: left;
+            clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%);
+        }
+
+        /* Holographic geometric core (Loader) */
+        .loader-core {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px auto;
+            border: 2px solid transparent;
+            border-top: 2px solid #00f3ff;
+            border-bottom: 2px solid #ff003c;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 15px #00f3ff, inset 0 0 15px #ff003c;
+        }
+
+        .loader-core::before {
+            content: '';
+            width: 30px;
+            height: 30px;
+            border: 1px solid #00f3ff;
+            transform: rotate(45deg);
+            animation: pulse 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 100% { transform: rotate(45deg) scale(1.2); opacity: 0.5; } }
+
+        /* --- TYPOGRAPHY & ANIMATIONS --- */
+        p, h1, h2 {
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px rgba(0, 243, 255, 0.5);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .highlight-cyan { color: #00f3ff; text-shadow: 0 0 10px #00f3ff; }
+        .highlight-red { color: #ff003c; text-shadow: 0 0 10px #ff003c; }
+
+        .hidden { display: none; }
+        .fade-in { animation: fadeIn 0.3s forwards; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Identity Reveal Styling */
+        .identity-reveal h1 {
+            font-size: 1.8rem;
+            color: #fff;
+            text-shadow: 0 0 10px #00f3ff, 0 0 20px #00f3ff;
+            letter-spacing: 2px;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+        .identity-reveal h2 {
+            font-size: 1rem;
+            color: #00f3ff;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .blinking-cursor::after {
+            content: '_';
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Handoff Animation */
+        .warp-speed {
+            opacity: 0;
+            filter: blur(10px) brightness(2);
+            transform: scale(1.5);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 3D Environment -->
+    <div class="scene">
+        <div class="ceiling"></div>
+        <div class="floor"></div>
+    </div>
+
+    <!-- HUD Interface -->
+    <div class="hud-container" id="hud">
+        <div class="loader-core" id="loader"></div>
+        
+        <!-- Step 1: Sync -->
+        <div id="step1" class="hidden">
+            <p class="highlight-cyan">[SYSTEM_INIT]</p>
+            <p>> Syncing network...</p>
+            <p>> Date: <span id="date-str"></span></p>
+            <p>> Time: <span id="time-str"></span></p>
+        </div>
+
+        <!-- Step 2: Greeting -->
+        <div id="step2" class="hidden" style="margin-top: 15px;">
+            <p>> <span class="highlight-cyan">STATUS: CORE ONLINE</span></p>
+            <p class="blinking-cursor">> <span id="dynamic-greeting"></span></p>
+        </div>
+
+        <!-- Step 3: Identity -->
+        <div id="step3" class="hidden identity-reveal">
+            <h1>JACK (STARK DEV)</h1>
+            <h2>FULL-STACK DEVELOPER</h2>
+            <p class="highlight-red">> System Online. Launching...</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            // 1. Live Time Formatting
+            function updateClock() {
+                const now = new Date();
+                const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+                const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                
+                const dayName = days[now.getDay()];
+                const dayNum = now.getDate();
+                const month = months[now.getMonth()];
+                const year = now.getFullYear();
+                
+                // Format: Wed, 15 Jul 2026
+                const dateString = `${dayName}, ${dayNum} ${month} ${year}`;
+                
+                // Time Format: HH:MM:SS
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                const timeString = `${hours}:${minutes}:${seconds}`;
+
+                document.getElementById('date-str').textContent = dateString;
+                document.getElementById('time-str').textContent = timeString;
+
+                return now.getHours();
+            }
+
+            // Set initial clock and get current hour
+            const currentHour = updateClock();
+            
+            // Keep clock ticking for the duration of the intro
+            setInterval(updateClock, 1000);
+
+            // 2. Dynamic Greeting Logic
+            let timeOfDay = "evening";
+            if (currentHour >= 0 && currentHour < 12) {
+                timeOfDay = "morning";
+            } else if (currentHour >= 12 && currentHour < 17) {
+                timeOfDay = "afternoon";
+            }
+            
+            const greetingText = `Good ${timeOfDay} and welcome to portfolio sir / ma'am.`;
+            document.getElementById('dynamic-greeting').textContent = greetingText;
+
+            // 3. The 7-Second Timeline Choreography
+            const loader = document.getElementById('loader');
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+            const body = document.body;
+
+            // Seconds 0-1.5: Loader spins (handled by CSS automatically)
+
+            // Seconds 1.5 - 3.5: Date & Time Sync
+            setTimeout(() => {
+                loader.style.display = 'none';
+                step1.classList.remove('hidden');
+                step1.classList.add('fade-in');
+            }, 1500);
+
+            // Seconds 3.5 - 5.0: The Dynamic Greeting
+            setTimeout(() => {
+                step2.classList.remove('hidden');
+                step2.classList.add('fade-in');
+            }, 3500);
+
+            // Seconds 5.0 - 6.0: Identity Reveal
+            setTimeout(() => {
+                step1.style.display = 'none';
+                step2.style.display = 'none';
+                step3.classList.remove('hidden');
+                step3.classList.add('fade-in');
+            }, 5000);
+
+            // Seconds 6.0 - 7.0: The Handoff Transition
+            setTimeout(() => {
+                body.classList.add('warp-speed');
+            }, 6200);
+
+            // Second 7.0: Redirect to main landing page
+            setTimeout(() => {
+                // When running locally/on GitHub, this redirects to the index.html file
+                window.location.href = 'index.html'; 
+            }, 7000);
+        });
+    </script>
+</body>
+</html>
