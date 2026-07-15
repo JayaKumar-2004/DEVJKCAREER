@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>System Boot | Dudhsagar Falls</title>
+    <title>System Boot | Live Environment</title>
     <style>
-        /* --- GLOBAL RESET & THEME --- */
+        /* --- GLOBAL RESET & DYNAMIC THEME VARIABLES --- */
         * {
             margin: 0;
             padding: 0;
@@ -13,21 +13,54 @@
             font-family: 'Courier New', Courier, monospace;
         }
         
+        :root {
+            /* Default to Night Theme */
+            --sky-top: #020111;
+            --sky-bottom: #20124d;
+            --celestial-color: #f4f6ff; /* Moon */
+            --celestial-shadow: 0 0 40px #f4f6ff, 0 0 100px #f4f6ff;
+            --celestial-y: 20vh;
+            --landscape-color: #050510;
+            --cloud-opacity: 0.3;
+        }
+
+        /* Morning / Day Theme */
+        body.theme-day {
+            --sky-top: #56CCF2;
+            --sky-bottom: #2F80ED;
+            --celestial-color: #FFD700; /* Sun */
+            --celestial-shadow: 0 0 60px #FFD700, 0 0 120px #FF8C00;
+            --celestial-y: 15vh;
+            --landscape-color: #0c1e14;
+            --cloud-opacity: 0.8;
+        }
+
+        /* Sunset Theme */
+        body.theme-sunset {
+            --sky-top: #8A2387;
+            --sky-bottom: #E94057;
+            --celestial-color: #FF512F; /* Setting Sun */
+            --celestial-shadow: 0 0 50px #FF512F, 0 0 100px #F09819;
+            --celestial-y: 55vh;
+            --landscape-color: #1a0b12;
+            --cloud-opacity: 0.6;
+        }
+
         body {
-            background-color: #020a04; /* Deep Night Jungle Green */
+            background: linear-gradient(to bottom, var(--sky-top), var(--sky-bottom));
             color: #ffffff;
             overflow: hidden;
             height: 100vh;
             width: 100vw;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            padding-top: 12vh; /* Pushes HUD up away from the train tracks */
+            align-items: center;
             position: relative;
+            transition: background 2s ease-in-out;
         }
 
-        /* --- DUDHSAGAR FALLS & JUNGLE GORGE --- */
-        .scenery-viewport {
+        /* --- LIVE ENVIRONMENT LAYER --- */
+        .environment-wrapper {
             position: absolute;
             top: 0;
             left: 0;
@@ -35,149 +68,141 @@
             height: 100vh;
             z-index: 1;
             overflow: hidden;
-            background: linear-gradient(to bottom, #010602 0%, #051a0a 100%);
         }
 
-        /* Dark Jungle Cliffs framing the sides */
-        .cliff-left, .cliff-right {
+        /* Sun / Moon */
+        .celestial-body {
+            position: absolute;
+            left: 50%;
+            top: var(--celestial-y);
+            transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--celestial-color);
+            box-shadow: var(--celestial-shadow);
+            transition: all 2s ease-in-out;
+            z-index: 2;
+        }
+
+        /* Twinkling Stars (Only visible at night) */
+        .stars {
             position: absolute;
             top: 0;
-            width: 35vw;
-            height: 100vh;
-            background: #010803;
-            z-index: 3;
-        }
-        .cliff-left {
             left: 0;
-            box-shadow: 20px 0 50px rgba(0,0,0,0.9);
-            border-right: 2px solid #0a2912;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 2s;
         }
-        .cliff-right {
-            right: 0;
-            box-shadow: -20px 0 50px rgba(0,0,0,0.9);
-            border-left: 2px solid #0a2912;
-        }
-
-        /* Rushing Water Columns */
-        .waterfall-core {
+        body.theme-night .stars { opacity: 1; }
+        
+        /* Generating random stars using box-shadow trick */
+        .stars::after {
+            content: '';
             position: absolute;
-            top: 0;
-            left: 25vw;
-            width: 50vw;
-            height: 100vh;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(200,245,255,0.8) 70%, rgba(255,255,255,0.95) 100%);
-            z-index: 2;
+            width: 2px;
+            height: 2px;
+            background: transparent;
+            box-shadow: 
+                10vw 10vh #fff, 20vw 20vh #fff, 30vw 5vh #fff, 40vw 40vh #fff, 
+                50vw 15vh #fff, 60vw 30vh #fff, 70vw 10vh #fff, 80vw 45vh #fff, 
+                90vw 25vh #fff, 15vw 50vh #fff, 25vw 70vh #fff, 35vw 60vh #fff,
+                45vw 80vh #fff, 65vw 65vh #fff, 75vw 85vh #fff, 85vw 75vh #fff;
+            animation: twinkle 3s infinite alternate;
         }
 
-        .waterfall-streams {
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        /* Moving Clouds (Pure CSS) */
+        .clouds {
             position: absolute;
-            top: 0;
-            left: 25vw;
-            width: 50vw;
-            height: 100vh;
-            background: repeating-linear-gradient(
-                90deg,
-                rgba(255, 255, 255, 0) 0px,
-                rgba(255, 255, 255, 0.4) 8px,
-                rgba(180, 240, 255, 0.7) 16px,
-                rgba(255, 255, 255, 0) 24px
-            );
-            background-size: 100% 200%;
-            animation: rushDown 0.4s linear infinite;
-            z-index: 2;
-            opacity: 0.8;
+            top: 15%;
+            left: 0;
+            width: 200vw;
+            height: 100%;
+            z-index: 3;
+            opacity: var(--cloud-opacity);
+            transition: opacity 2s;
+            pointer-events: none;
         }
 
-        @keyframes rushDown {
-            0% { background-position: 0 0%; }
-            100% { background-position: 0 100%; }
+        .cloud {
+            position: absolute;
+            background: #fff;
+            border-radius: 50px;
+            filter: blur(2px);
         }
 
-        /* Heavy Mist Cloud at Base */
-        .mist-cloud {
+        .cloud::before, .cloud::after {
+            content: '';
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+        }
+
+        .cloud-1 {
+            top: 10%; width: 120px; height: 40px;
+            animation: floatCloud 45s linear infinite;
+        }
+        .cloud-1::before { width: 50px; height: 50px; top: -20px; left: 15px; }
+        .cloud-1::after { width: 40px; height: 40px; top: -10px; left: 60px; }
+
+        .cloud-2 {
+            top: 25%; width: 180px; height: 60px;
+            animation: floatCloud 60s linear infinite reverse;
+        }
+        .cloud-2::before { width: 80px; height: 80px; top: -40px; left: 20px; }
+        .cloud-2::after { width: 60px; height: 60px; top: -20px; left: 90px; }
+
+        .cloud-3 {
+            top: 15%; width: 100px; height: 30px;
+            animation: floatCloud 35s linear infinite;
+        }
+        .cloud-3::before { width: 40px; height: 40px; top: -15px; left: 15px; }
+        .cloud-3::after { width: 30px; height: 30px; top: -10px; left: 45px; }
+
+        @keyframes floatCloud {
+            0% { transform: translateX(-20vw); }
+            100% { transform: translateX(120vw); }
+        }
+
+        /* Landscape Silhouette (Vector Style) */
+        .landscape-silhouette {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100vw;
             height: 35vh;
-            background: linear-gradient(to top, rgba(255,255,255,0.9) 0%, rgba(200,240,255,0.5) 50%, transparent 100%);
-            filter: blur(12px);
             z-index: 4;
-            animation: mistBillow 4s ease-in-out infinite alternate;
-        }
-
-        @keyframes mistBillow {
-            0% { transform: scaleY(1) translateY(0); opacity: 0.8; }
-            100% { transform: scaleY(1.15) translateY(-15px); opacity: 1; }
-        }
-
-        /* --- RAILWAY BRIDGE & MOVING TRAIN (LOWER THIRD) --- */
-        .railway-bridge {
-            position: absolute;
-            bottom: 20%;
-            left: 0;
-            width: 100vw;
-            height: 16px;
-            background: #151515;
-            border-top: 3px solid #444;
-            border-bottom: 4px solid #000;
-            box-shadow: 0 15px 25px rgba(0,0,0,0.8);
-            z-index: 5; /* Sits in front of cliffs and mist */
-        }
-
-        .bridge-pillars {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100vw;
-            height: 20%;
-            background: repeating-linear-gradient(
-                90deg,
-                transparent 0%,
-                transparent 12%,
-                #0d0d0d 12%,
-                #1a1a1a 15%,
-                transparent 15%
+            background: var(--landscape-color);
+            transition: background 2s ease-in-out;
+            clip-path: polygon(
+                0% 100%, 100% 100%, 100% 60%, 
+                85% 45%, 75% 65%, 60% 30%, 
+                45% 55%, 30% 40%, 15% 70%, 0% 50%
             );
-            z-index: 4;
         }
 
-        .train-track {
-            position: absolute;
-            bottom: calc(20% - 2.8rem);
-            left: 0;
-            width: 100vw;
-            z-index: 6; /* Sits in front of everything */
-        }
-
-        .train-emojis {
-            display: inline-block;
-            font-size: 2.6rem;
-            white-space: nowrap;
-            filter: drop-shadow(0 5px 8px rgba(0,0,0,0.7));
-            animation: chugTrain 6.5s linear forwards;
-            will-change: transform;
-        }
-
-        @keyframes chugTrain {
-            0% { transform: translate3d(100vw, 0, 0); }
-            100% { transform: translate3d(-250vw, 0, 0); }
-        }
-
-        /* --- GLASSMORPHIC HUD CONSOLE (CENTERED ABOVE TRACKS) --- */
+        /* --- GLASSMORPHIC HUD CONSOLE --- */
         .hud-box {
             position: relative;
             z-index: 10;
             width: 90%;
             max-width: 440px;
             min-height: 320px;
-            background: rgba(2, 12, 6, 0.85); /* Darker, high-contrast jungle glass */
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 2px solid #00ff73;
-            border-radius: 12px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 0 20px rgba(0, 255, 115, 0.15);
-            padding: 22px 18px;
+            background: rgba(4, 8, 14, 0.65); /* Dark adaptive glass */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,255,255,0.05);
+            padding: 25px 20px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -194,13 +219,13 @@
             text-shadow: 0 2px 5px rgba(0, 0, 0, 0.9);
         }
 
-        .highlight-green { color: #00ff73; text-shadow: 0 0 10px rgba(0, 255, 115, 0.6); }
+        .highlight-accent { color: #00f3ff; text-shadow: 0 0 10px rgba(0, 243, 255, 0.6); }
         .highlight-white { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.8); }
 
         .hidden { display: none !important; }
         
         .fade-in {
-            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         @keyframes fadeIn {
@@ -217,7 +242,7 @@
         }
 
         .name-primary {
-            font-size: 1.7rem;
+            font-size: 1.8rem;
             color: #ffffff;
             font-weight: 900;
             letter-spacing: 2px;
@@ -226,7 +251,7 @@
 
         .name-secondary {
             font-size: 1.15rem;
-            color: #00ff73;
+            color: #00f3ff;
             font-weight: bold;
             letter-spacing: 1px;
         }
@@ -240,80 +265,84 @@
         }
 
         .tag {
-            padding: 4px 10px;
+            padding: 4px 12px;
             border: 1px solid rgba(255, 255, 255, 0.5);
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
             font-size: 0.9rem;
             font-weight: bold;
             letter-spacing: 1px;
-            border-radius: 4px;
+            border-radius: 6px;
         }
 
-        .tag-green {
-            border-color: #00ff73;
-            background: rgba(0, 255, 115, 0.15);
-            color: #00ff73;
-            box-shadow: 0 0 8px rgba(0, 255, 115, 0.4);
+        .tag-accent {
+            border-color: #00f3ff;
+            background: rgba(0, 243, 255, 0.15);
+            color: #00f3ff;
+            box-shadow: 0 0 8px rgba(0, 243, 255, 0.4);
         }
 
         .role-title {
             font-size: 1.05rem;
             color: #ffffff;
             font-weight: 800;
-            margin-top: 8px;
+            margin-top: 10px;
             letter-spacing: 1.5px;
             text-transform: uppercase;
         }
 
-        /* --- MIST WHITEOUT EXIT ANIMATION --- */
-        .mist-exit {
-            animation: whiteOut 0.8s forwards;
+        /* --- ENVIRONMENTAL FADEOUT EXIT ANIMATION --- */
+        .environment-exit {
+            animation: fadeOut 0.8s forwards;
         }
 
-        @keyframes whiteOut {
+        @keyframes fadeOut {
             0% { opacity: 1; filter: brightness(1); }
-            100% { opacity: 0; filter: brightness(8) blur(15px); transform: scale(1.08); }
+            100% { opacity: 0; filter: brightness(3) blur(10px); transform: scale(1.1); }
         }
     </style>
 </head>
-<body>
+<body class="theme-night" id="dynamic-body"> <!-- Default, replaced by JS -->
 
-    <div class="scenery-viewport">
-        <div class="cliff-left"></div>
-        <div class="cliff-right"></div>
-        <div class="waterfall-core"></div>
-        <div class="waterfall-streams"></div>
-        <div class="bridge-pillars"></div>
-        <div class="mist-cloud"></div>
-        <div class="railway-bridge"></div>
+    <!-- Live Environment Elements -->
+    <div class="environment-wrapper">
+        <div class="stars"></div>
+        <div class="celestial-body"></div>
+        
+        <div class="clouds">
+            <div class="cloud cloud-1" style="left: -10vw;"></div>
+            <div class="cloud cloud-2" style="left: 40vw;"></div>
+            <div class="cloud cloud-3" style="left: 80vw;"></div>
+        </div>
+
+        <div class="landscape-silhouette"></div>
     </div>
 
-    <div class="train-track">
-        <div class="train-emojis">🚂🚋🚃🚋🚃🚋🚃🚋🚃🚋🚃🚋🚃</div>
-    </div>
-
+    <!-- Glassmorphic HUD Console -->
     <div class="hud-box" id="hud">
         
+        <!-- Step 1: Network & Time Sync -->
         <div id="step-sync" class="text-line">
-            <div class="highlight-green" style="font-size: 1.25rem; margin-bottom: 10px;">[ ENVIRONMENT SYNC ]</div>
+            <div class="highlight-accent" style="font-size: 1.25rem; margin-bottom: 10px;">[ ENVIRONMENT SYNC ]</div>
             <div>> LOCAL TIME DETECTED...</div>
             <div style="margin-top: 8px;">DATE: <span id="clock-date" class="highlight-white"></span></div>
             <div>TIME: <span id="clock-time" class="highlight-white"></span></div>
         </div>
 
+        <!-- Step 2: Personalized AI Greeting -->
         <div id="step-greet" class="hidden text-line">
             <div class="highlight-white" style="font-size: 1.05rem; margin-bottom: 10px;">[ PRESENCE VERIFIED ]</div>
-            <div id="dynamic-greeting" class="highlight-green" style="font-size: 1.2rem; line-height: 1.5;"></div>
+            <div id="dynamic-greeting" class="highlight-accent" style="font-size: 1.2rem; line-height: 1.5;"></div>
         </div>
 
+        <!-- Step 3: Grand Name & Identity Reveal -->
         <div id="step-identity" class="hidden identity-container">
             <div class="name-primary">JAYA KUMAR</div>
             <div class="name-secondary">( S JAYA KUMAR )</div>
             
             <div class="aliases-wrapper">
                 <span class="tag">STARK DEV</span>
-                <span class="tag tag-green">JACK</span>
+                <span class="tag tag-accent">JACK</span>
             </div>
             
             <div class="role-title">FULL-STACK DEVELOPER</div>
@@ -323,8 +352,8 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             
-            // 1. LIVE CLOCK & DATE ENGINE
-            function runClock() {
+            // 1. LIVE CLOCK, DATE, AND DYNAMIC THEME ENGINE
+            function runClockAndTheme() {
                 const now = new Date();
                 const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
                 const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
@@ -341,21 +370,40 @@
                 if (dateEl) dateEl.textContent = dateStr;
                 if (timeEl) timeEl.textContent = timeStr;
 
-                return now.getHours();
+                // Theme Logic Based on Hour
+                const currentHour = now.getHours();
+                const body = document.getElementById('dynamic-body');
+                let timeOfDay = "evening";
+
+                body.classList.remove('theme-day', 'theme-sunset', 'theme-night');
+
+                if (currentHour >= 6 && currentHour < 16) {
+                    // 6 AM to 4 PM: Bright Day
+                    body.classList.add('theme-day');
+                    timeOfDay = "morning";
+                    if (currentHour >= 12) timeOfDay = "afternoon";
+                } 
+                else if (currentHour >= 16 && currentHour < 19) {
+                    // 4 PM to 7 PM: Golden Hour Sunset
+                    body.classList.add('theme-sunset');
+                    timeOfDay = "evening";
+                } 
+                else {
+                    // 7 PM to 6 AM: Night time
+                    body.classList.add('theme-night');
+                    timeOfDay = "evening";
+                    if(currentHour >= 0 && currentHour < 6) timeOfDay = "morning"; // Late night/early morning
+                }
+
+                return timeOfDay;
             }
 
-            const currentHour = runClock();
-            setInterval(runClock, 1000);
+            // Set initial theme and clock, then update every second
+            let greetingTime = runClockAndTheme();
+            setInterval(runClockAndTheme, 1000);
 
-            // 2. DYNAMIC TIME-BASED GREETING LOGIC
-            let timeOfDay = "evening";
-            if (currentHour >= 4 && currentHour < 12) {
-                timeOfDay = "morning";
-            } else if (currentHour >= 12 && currentHour < 17) {
-                timeOfDay = "afternoon";
-            }
-            
-            const greetingString = `> Good ${timeOfDay} and welcome to portfolio sir / ma'am.`;
+            // Set dynamic greeting text
+            const greetingString = `> Good ${greetingTime} and welcome to portfolio sir / ma'am.`;
             document.getElementById('dynamic-greeting').textContent = greetingString;
 
             // 3. EXACT 7-SECOND CHOREOGRAPHY
@@ -363,7 +411,7 @@
             const stepGreet = document.getElementById('step-greet');
             const stepIdentity = document.getElementById('step-identity');
 
-            // 0.0s to 2.5s: Time Sync shows while the train chugs onto the bridge below
+            // 0.0s to 2.5s: Time & Environment Sync displays
             
             // 2.5s to 4.5s: Dynamic Greeting
             setTimeout(() => {
@@ -379,14 +427,13 @@
                 stepIdentity.classList.add('fade-in');
             }, 4500);
 
-            // 6.2s to 7.0s: Mist Whiteout Transition
+            // 6.2s to 7.0s: Environmental Fadeout Transition
             setTimeout(() => {
-                document.body.classList.add('mist-exit');
+                document.body.classList.add('environment-exit');
             }, 6200);
 
             // 7.0s: Automatic Redirect to Main Landing Page
             setTimeout(() => {
-                // IMPORTANT: If your main portfolio page is named index.html, change 'home.html' below to 'index.html'
                 window.location.href = 'home.html'; 
             }, 7000);
         });
