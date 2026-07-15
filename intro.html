@@ -2,283 +2,362 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Init | Stark Dev</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>System Boot | Jaya Kumar</title>
     <style>
-        /* --- GLOBAL & RESET --- */
+        /* --- GLOBAL RESET & THEME --- */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
         }
         
         body {
-            background-color: #030508;
+            background-color: #020408;
             color: #00f3ff;
-            font-family: 'Courier New', Courier, monospace;
             overflow: hidden;
+            height: 100vh;
+            width: 100vw;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            width: 100vw;
-            transition: opacity 0.8s ease-in, filter 0.8s ease-in;
+            position: relative;
         }
 
-        /* --- 3D LIVING CORRIDOR BACKGROUND --- */
-        .scene {
+        /* --- 3D NEON CORRIDOR & HORIZON LIGHTING --- */
+        .viewport-3d {
             position: absolute;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            perspective: 800px;
-            z-index: 0;
+            perspective: 600px;
+            z-index: 1;
+            overflow: hidden;
         }
 
-        .floor, .ceiling {
+        /* Glowing center horizon glow */
+        .horizon-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150vw;
+            height: 20vh;
+            background: radial-gradient(ellipse at center, rgba(255, 0, 60, 0.3) 0%, rgba(0, 243, 255, 0.15) 40%, transparent 80%);
+            filter: blur(20px);
+            z-index: 2;
+        }
+
+        .grid-floor, .grid-ceiling {
             position: absolute;
             width: 200vw;
-            height: 200vh;
+            height: 100vh;
             left: -50vw;
+            background-size: 40px 40px;
+            animation: gridMove 2s linear infinite;
+        }
+
+        .grid-floor {
+            bottom: -30vh;
+            transform: rotateX(75deg);
             background-image: 
-                linear-gradient(#ff003c44 1px, transparent 1px),
-                linear-gradient(90deg, #ff003c44 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: moveGrid 3s linear infinite;
+                linear-gradient(to right, rgba(255, 0, 60, 0.4) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 0, 60, 0.4) 1px, transparent 1px);
+            box-shadow: inset 0 0 120px #020408;
         }
 
-        .floor {
-            bottom: -50vh;
-            transform: rotateX(80deg);
-            box-shadow: inset 0 0 100px #000;
-        }
-
-        .ceiling {
-            top: -50vh;
-            transform: rotateX(-80deg);
+        .grid-ceiling {
+            top: -30vh;
+            transform: rotateX(-75deg);
             background-image: 
-                linear-gradient(#00f3ff44 1px, transparent 1px),
-                linear-gradient(90deg, #00f3ff44 1px, transparent 1px);
-            box-shadow: inset 0 0 100px #000;
+                linear-gradient(to right, rgba(0, 243, 255, 0.3) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 243, 255, 0.3) 1px, transparent 1px);
+            box-shadow: inset 0 0 120px #020408;
         }
 
-        @keyframes moveGrid {
+        @keyframes gridMove {
             0% { background-position: 0 0; }
-            100% { background-position: 0 50px; }
+            100% { background-position: 0 40px; }
         }
 
-        /* --- HUD CONTAINER & HOLOGRAM --- */
-        .hud-container {
+        /* --- ADVANCED HUD PANEL (MOBILE OPTIMIZED) --- */
+        .hud-box {
             position: relative;
             z-index: 10;
-            width: 90%;
-            max-width: 500px;
-            padding: 30px;
-            border: 1px solid rgba(0, 243, 255, 0.3);
-            background: rgba(3, 5, 8, 0.7);
-            backdrop-filter: blur(5px);
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2), inset 0 0 20px rgba(0, 243, 255, 0.1);
-            text-align: left;
-            clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%);
-        }
-
-        /* Holographic geometric core (Loader) */
-        .loader-core {
-            width: 60px;
-            height: 60px;
-            margin: 0 auto 20px auto;
-            border: 2px solid transparent;
-            border-top: 2px solid #00f3ff;
-            border-bottom: 2px solid #ff003c;
-            border-radius: 50%;
-            animation: spin 1.5s linear infinite;
+            width: 92%;
+            max-width: 480px;
+            min-height: 380px;
+            background: rgba(4, 8, 14, 0.85);
+            border: 2px solid #00f3ff;
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.3), inset 0 0 25px rgba(0, 243, 255, 0.2);
+            padding: 25px 20px;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 0 15px #00f3ff, inset 0 0 15px #ff003c;
+            text-align: center;
+            clip-path: polygon(15px 0, calc(100% - 15px) 0, 100% 15px, 100% calc(100% - 15px), calc(100% - 15px) 100%, 15px 100%, 0 calc(100% - 15px), 0 15px);
         }
 
-        .loader-core::before {
+        /* Animated corner accents */
+        .hud-box::before, .hud-box::after {
             content: '';
-            width: 30px;
-            height: 30px;
-            border: 1px solid #00f3ff;
-            transform: rotate(45deg);
-            animation: pulse 1s ease-in-out infinite alternate;
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: #ff003c;
+            border-style: solid;
+            transition: all 0.3s;
+        }
+        .hud-box::before { top: 8px; left: 8px; border-width: 2px 0 0 2px; }
+        .hud-box::after { bottom: 8px; right: 8px; border-width: 0 2px 2px 0; }
+
+        /* Scanning Laser Line */
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #ff003c, #00f3ff, transparent);
+            opacity: 0.7;
+            animation: scan 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes scan {
+            0% { top: 5%; }
+            100% { top: 90%; }
+        }
+
+        /* --- 3D SPINNING CORE --- */
+        .loader-ring {
+            width: 70px;
+            height: 70px;
+            border: 3px solid transparent;
+            border-top: 3px solid #00f3ff;
+            border-bottom: 3px solid #ff003c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
         }
 
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes pulse { 100% { transform: rotate(45deg) scale(1.2); opacity: 0.5; } }
 
-        /* --- TYPOGRAPHY & ANIMATIONS --- */
-        p, h1, h2 {
-            margin-bottom: 10px;
-            text-shadow: 0 0 5px rgba(0, 243, 255, 0.5);
-            font-size: 0.9rem;
-            line-height: 1.4;
+        /* --- TYPOGRAPHY (LARGE FOR MOBILE) --- */
+        .text-line {
+            font-size: 1.15rem;
+            font-weight: bold;
+            line-height: 1.6;
+            margin: 6px 0;
+            text-shadow: 0 0 8px rgba(0, 243, 255, 0.8);
         }
 
-        .highlight-cyan { color: #00f3ff; text-shadow: 0 0 10px #00f3ff; }
-        .highlight-red { color: #ff003c; text-shadow: 0 0 10px #ff003c; }
+        .highlight-cyan { color: #00f3ff; text-shadow: 0 0 12px #00f3ff; }
+        .highlight-red { color: #ff003c; text-shadow: 0 0 12px #ff003c; }
+        .highlight-white { color: #ffffff; text-shadow: 0 0 15px #ffffff; }
 
-        .hidden { display: none; }
-        .fade-in { animation: fadeIn 0.3s forwards; }
+        .hidden { display: none !important; }
+        
+        .fade-in {
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: scale(0.92); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        /* Identity Reveal Styling */
-        .identity-reveal h1 {
+        /* --- GRAND IDENTITY REVEAL STYLING --- */
+        .identity-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .name-primary {
             font-size: 1.8rem;
-            color: #fff;
-            text-shadow: 0 0 10px #00f3ff, 0 0 20px #00f3ff;
+            color: #ffffff;
+            font-weight: 900;
             letter-spacing: 2px;
-            margin-top: 15px;
-            margin-bottom: 5px;
+            text-shadow: 0 0 15px #00f3ff, 0 0 30px #00f3ff;
         }
-        .identity-reveal h2 {
-            font-size: 1rem;
+
+        .name-secondary {
+            font-size: 1.2rem;
             color: #00f3ff;
+            font-weight: bold;
             letter-spacing: 1px;
-            margin-bottom: 15px;
         }
 
-        .blinking-cursor::after {
-            content: '_';
-            animation: blink 1s step-end infinite;
+        .aliases-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 8px 0;
+            flex-wrap: wrap;
         }
-        @keyframes blink { 50% { opacity: 0; } }
 
-        /* Handoff Animation */
-        .warp-speed {
-            opacity: 0;
-            filter: blur(10px) brightness(2);
-            transform: scale(1.5);
+        .tag {
+            padding: 5px 12px;
+            border: 1px solid #ff003c;
+            background: rgba(255, 0, 60, 0.15);
+            color: #ff003c;
+            font-size: 0.95rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 0 10px rgba(255, 0, 60, 0.4);
+        }
+
+        .tag-cyan {
+            border-color: #00f3ff;
+            background: rgba(0, 243, 255, 0.15);
+            color: #00f3ff;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
+        }
+
+        .role-title {
+            font-size: 1.1rem;
+            color: #ff003c;
+            font-weight: 800;
+            margin-top: 10px;
+            letter-spacing: 1.5px;
+            animation: pulseText 1s infinite alternate;
+        }
+
+        @keyframes pulseText {
+            from { opacity: 0.7; }
+            to { opacity: 1; text-shadow: 0 0 15px #ff003c; }
+        }
+
+        /* --- WARP SPEED EXIT ANIMATION --- */
+        .warp-exit {
+            animation: warpOut 0.8s forwards cubic-bezier(0.7, 0, 0.84, 0);
+        }
+
+        @keyframes warpOut {
+            0% { opacity: 1; transform: scale(1); filter: brightness(1); }
+            50% { filter: brightness(3) blur(2px); }
+            100% { opacity: 0; transform: scale(2.5); filter: brightness(5) blur(10px); }
         }
     </style>
 </head>
 <body>
 
-    <!-- 3D Environment -->
-    <div class="scene">
-        <div class="ceiling"></div>
-        <div class="floor"></div>
+    <div class="viewport-3d">
+        <div class="horizon-glow"></div>
+        <div class="grid-ceiling"></div>
+        <div class="grid-floor"></div>
     </div>
 
-    <!-- HUD Interface -->
-    <div class="hud-container" id="hud">
-        <div class="loader-core" id="loader"></div>
+    <div class="hud-box" id="hud">
+        <div class="scan-line"></div>
         
-        <!-- Step 1: Sync -->
-        <div id="step1" class="hidden">
-            <p class="highlight-cyan">[SYSTEM_INIT]</p>
-            <p>> Syncing network...</p>
-            <p>> Date: <span id="date-str"></span></p>
-            <p>> Time: <span id="time-str"></span></p>
+        <div class="loader-ring" id="loader"></div>
+        
+        <div id="step-sync" class="hidden text-line">
+            <div class="highlight-cyan" style="font-size: 1.3rem; margin-bottom: 12px;">[ SYSTEM INITIALIZING ]</div>
+            <div>> SYNCING CLOCK...</div>
+            <div style="margin-top: 8px;">DATE: <span id="clock-date" class="highlight-white"></span></div>
+            <div>TIME: <span id="clock-time" class="highlight-white"></span></div>
         </div>
 
-        <!-- Step 2: Greeting -->
-        <div id="step2" class="hidden" style="margin-top: 15px;">
-            <p>> <span class="highlight-cyan">STATUS: CORE ONLINE</span></p>
-            <p class="blinking-cursor">> <span id="dynamic-greeting"></span></p>
+        <div id="step-greet" class="hidden text-line">
+            <div class="highlight-red" style="font-size: 1.1rem; margin-bottom: 10px;">[ STATUS: BIOMETRIC AUTH OK ]</div>
+            <div id="dynamic-greeting" class="highlight-cyan" style="font-size: 1.25rem; line-height: 1.5;"></div>
         </div>
 
-        <!-- Step 3: Identity -->
-        <div id="step3" class="hidden identity-reveal">
-            <h1>JACK (STARK DEV)</h1>
-            <h2>FULL-STACK DEVELOPER</h2>
-            <p class="highlight-red">> System Online. Launching...</p>
+        <div id="step-identity" class="hidden identity-container">
+            <div class="name-primary">JAYA KUMAR</div>
+            <div class="name-secondary">( S JAYA KUMAR )</div>
+            
+            <div class="aliases-wrapper">
+                <span class="tag">STARK DEV</span>
+                <span class="tag tag-cyan">JACK</span>
+            </div>
+            
+            <div class="role-title">> FULL-STACK DEVELOPER <</div>
         </div>
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             
-            // 1. Live Time Formatting
-            function updateClock() {
+            // 1. LIVE CLOCK & DATE ENGINE
+            function runClock() {
                 const now = new Date();
-                const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-                const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+                const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
                 
-                const dayName = days[now.getDay()];
-                const dayNum = now.getDate();
-                const month = months[now.getMonth()];
-                const year = now.getFullYear();
+                const dateStr = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
                 
-                // Format: Wed, 15 Jul 2026
-                const dateString = `${dayName}, ${dayNum} ${month} ${year}`;
-                
-                // Time Format: HH:MM:SS
-                const hours = String(now.getHours()).padStart(2, '0');
-                const minutes = String(now.getMinutes()).padStart(2, '0');
-                const seconds = String(now.getSeconds()).padStart(2, '0');
-                const timeString = `${hours}:${minutes}:${seconds}`;
+                const hrs = String(now.getHours()).padStart(2, '0');
+                const mins = String(now.getMinutes()).padStart(2, '0');
+                const secs = String(now.getSeconds()).padStart(2, '0');
+                const timeStr = `${hrs}:${mins}:${secs} IST`;
 
-                document.getElementById('date-str').textContent = dateString;
-                document.getElementById('time-str').textContent = timeString;
+                const dateEl = document.getElementById('clock-date');
+                const timeEl = document.getElementById('clock-time');
+                if (dateEl) dateEl.textContent = dateStr;
+                if (timeEl) timeEl.textContent = timeStr;
 
                 return now.getHours();
             }
 
-            // Set initial clock and get current hour
-            const currentHour = updateClock();
-            
-            // Keep clock ticking for the duration of the intro
-            setInterval(updateClock, 1000);
+            const currentHour = runClock();
+            setInterval(runClock, 1000);
 
-            // 2. Dynamic Greeting Logic
+            // 2. DYNAMIC TIME-BASED GREETING LOGIC
             let timeOfDay = "evening";
-            if (currentHour >= 0 && currentHour < 12) {
+            if (currentHour >= 4 && currentHour < 12) {
                 timeOfDay = "morning";
             } else if (currentHour >= 12 && currentHour < 17) {
                 timeOfDay = "afternoon";
             }
             
-            const greetingText = `Good ${timeOfDay} and welcome to portfolio sir / ma'am.`;
-            document.getElementById('dynamic-greeting').textContent = greetingText;
+            const greetingString = `> Good ${timeOfDay} and welcome to portfolio sir / ma'am.`;
+            document.getElementById('dynamic-greeting').textContent = greetingString;
 
-            // 3. The 7-Second Timeline Choreography
+            // 3. EXACT 7-SECOND CHOREOGRAPHY
             const loader = document.getElementById('loader');
-            const step1 = document.getElementById('step1');
-            const step2 = document.getElementById('step2');
-            const step3 = document.getElementById('step3');
-            const body = document.body;
+            const stepSync = document.getElementById('step-sync');
+            const stepGreet = document.getElementById('step-greet');
+            const stepIdentity = document.getElementById('step-identity');
+            const hud = document.getElementById('hud');
 
-            // Seconds 0-1.5: Loader spins (handled by CSS automatically)
-
-            // Seconds 1.5 - 3.5: Date & Time Sync
+            // 0.0s to 1.5s: Spinning Holographic Loader
             setTimeout(() => {
-                loader.style.display = 'none';
-                step1.classList.remove('hidden');
-                step1.classList.add('fade-in');
+                loader.classList.add('hidden');
+                stepSync.classList.remove('hidden');
+                stepSync.classList.add('fade-in');
             }, 1500);
 
-            // Seconds 3.5 - 5.0: The Dynamic Greeting
+            // 1.5s to 3.5s: Dynamic Greeting
             setTimeout(() => {
-                step2.classList.remove('hidden');
-                step2.classList.add('fade-in');
+                stepSync.classList.add('hidden');
+                stepGreet.classList.remove('hidden');
+                stepGreet.classList.add('fade-in');
             }, 3500);
 
-            // Seconds 5.0 - 6.0: Identity Reveal
+            // 3.5s to 6.2s: Grand Name & Identity Reveal
             setTimeout(() => {
-                step1.style.display = 'none';
-                step2.style.display = 'none';
-                step3.classList.remove('hidden');
-                step3.classList.add('fade-in');
+                stepGreet.classList.add('hidden');
+                stepIdentity.classList.remove('hidden');
+                stepIdentity.classList.add('fade-in');
             }, 5000);
 
-            // Seconds 6.0 - 7.0: The Handoff Transition
+            // 6.2s to 7.0s: Warp Speed Screen Transition
             setTimeout(() => {
-                body.classList.add('warp-speed');
+                document.body.classList.add('warp-exit');
             }, 6200);
 
-            // Second 7.0: Redirect to main landing page
+            // 7.0s: Automatic Redirect to Main Landing Page
             setTimeout(() => {
-                // When running locally/on GitHub, this redirects to the index.html file
-                window.location.href = 'index.html'; 
+                // IMPORTANT: If your main portfolio page is named index.html, change 'home.html' below to 'index.html'
+                window.location.href = 'home.html'; 
             }, 7000);
         });
     </script>
