@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>System Boot | Cinematic City</title>
     <style>
         /* --- GLOBAL RESET & DYNAMIC THEME VARIABLES --- */
@@ -64,24 +64,25 @@
             --star-opacity: 0.3;
         }
 
+        /* UNLOCKED BODY: Auto-expands to fill 100% of any screen dynamically */
         body {
             background: linear-gradient(to bottom, var(--sky-top), var(--sky-bottom));
             color: #ffffff;
-            overflow-x: hidden;
-            overflow-y: hidden;
-            height: 100dvh; 
+            min-height: 100vh;
             width: 100%;
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
             padding-top: clamp(8vh, 12vh, 15vh);
             position: relative;
+            overflow: hidden;
             transition: background 2s ease-in-out;
         }
 
         /* --- SKY, FLIGHTS & CELESTIAL LAYER --- */
         .sky-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; overflow: hidden;
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;
         }
 
         .celestial-body {
@@ -143,7 +144,7 @@
         @keyframes flyAcross { 0% { transform: translateX(10vw) scale(0.8); } 100% { transform: translateX(-110vw) scale(1); } }
         @keyframes blinkFast { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
 
-        /* --- CITY SKYLINE (EDGE TO EDGE GUARANTEED) --- */
+        /* --- CITY SKYLINE: AUTO-EXPANDS PROPORTIONALLY TO FIT 100% WIDTH --- */
         .city-skyline {
             position: absolute; bottom: 60px; left: 0; right: 0; width: 100%; height: clamp(30vh, 40vh, 48vh);
             z-index: 4; pointer-events: none;
@@ -157,7 +158,7 @@
             border-right: 1px solid rgba(0,0,0,0.6);
             box-shadow: inset -5px 0 15px rgba(0,0,0,0.5);
             transition: background 2s;
-            flex: 1 1 0%; /* Forces perfect equal distribution across any screen width */
+            flex: 1 1 auto; /* Organically shares screen space without clipping */
         }
         .building::before {
             content: ''; position: absolute; top: 10px; left: 0; right: 0; bottom: 15px;
@@ -190,7 +191,7 @@
         .b5::before { background-image: radial-gradient(circle, var(--window-color1) 1.5px, transparent 2px); background-size: 16px 22px; }
         .b5::after { width: 30%; }
 
-        /* --- THE HIGHWAY (100% WIDTH GUARANTEED) --- */
+        /* --- THE HIGHWAY: UNLOCKED 100% WIDTH --- */
         .highway {
             position: absolute; bottom: 0; left: 0; right: 0;
             width: 100%; height: 60px; 
@@ -201,7 +202,7 @@
         }
 
         .street-lamps {
-            position: absolute; top: -35px; left: 0; width: 100%; height: 35px;
+            position: absolute; top: -35px; left: 0; right: 0; width: 100%; height: 35px;
             display: flex; justify-content: space-around;
         }
         .lamp { position: relative; width: 3px; height: 100%; background: #222; }
@@ -219,7 +220,7 @@
         }
         @keyframes driveRoad { 100% { transform: translate3d(-60px, -50%, 0); } }
 
-        .traffic-stream { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .traffic-stream { position: absolute; top: 0; left: 0; right: 0; width: 100%; height: 100%; }
         .car {
             position: absolute; width: 24px; height: 10px; background: #151515; border-radius: 3px;
             box-shadow: inset 0 2px 4px rgba(255,255,255,0.3); will-change: transform;
@@ -242,7 +243,7 @@
         @keyframes zoomLeft { 0% { transform: translate3d(110vw, 0, 0); } 100% { transform: translate3d(-100px, 0, 0); } }
         @keyframes zoomRight { 0% { transform: translate3d(-100px, 0, 0); } 100% { transform: translate3d(110vw, 0, 0); } }
 
-        /* --- HUD CONSOLE (GRID STACK TO PREVENT EMPTY BOX) --- */
+        /* --- HUD CONSOLE (GRID STACK FOR ZERO EMPTY BOXES) --- */
         .hud-box {
             position: relative; z-index: 10;
             width: 88%; max-width: 480px; min-height: clamp(200px, 25vh, 240px);
@@ -252,12 +253,11 @@
             border-radius: 12px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(0, 243, 255, 0.1);
             padding: clamp(16px, 4vw, 24px);
-            display: grid; /* Grid stacks all children in the exact same cell */
+            display: grid;
             place-items: center;
             text-align: center;
         }
 
-        /* Every step sits in grid row 1, col 1 - ZERO empty space! */
         .hud-step {
             grid-area: 1 / 1;
             width: 100%;
