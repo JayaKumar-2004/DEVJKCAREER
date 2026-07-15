@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>System Boot | Jaya Kumar</title>
+    <title>System Boot | Dudhsagar Intro</title>
     <style>
         /* --- GLOBAL RESET & THEME --- */
         * {
@@ -14,8 +14,8 @@
         }
         
         body {
-            background-color: #020408;
-            color: #00f3ff;
+            background-color: #05140a; /* Deep Jungle Green */
+            color: #ffffff;
             overflow: hidden;
             height: 100vh;
             width: 100vw;
@@ -25,126 +25,108 @@
             position: relative;
         }
 
-        /* --- 3D NEON CORRIDOR & HORIZON LIGHTING --- */
-        .viewport-3d {
+        /* --- DUDHSAGAR FALLS PURE CSS ART --- */
+        .scenery-container {
             position: absolute;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            perspective: 600px;
             z-index: 1;
             overflow: hidden;
         }
 
-        /* Glowing center horizon glow */
-        .horizon-glow {
+        /* The cascading water */
+        .waterfall {
             position: absolute;
-            top: 50%;
+            top: 0;
             left: 50%;
-            transform: translate(-50%, -50%);
-            width: 150vw;
-            height: 20vh;
-            background: radial-gradient(ellipse at center, rgba(255, 0, 60, 0.3) 0%, rgba(0, 243, 255, 0.15) 40%, transparent 80%);
+            transform: translateX(-50%);
+            width: 120vw;
+            height: 100vh;
+            background: linear-gradient(to bottom, 
+                rgba(255,255,255,0.1) 0%, 
+                rgba(200,240,255,0.6) 50%, 
+                rgba(255,255,255,0.9) 100%);
+            background-size: 100% 200%;
+            animation: cascade 2s linear infinite;
+            mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 60%);
+        }
+
+        @keyframes cascade {
+            0% { background-position: 0 0%; }
+            100% { background-position: 0 100%; }
+        }
+
+        /* The heavy mist at the bottom */
+        .mist {
+            position: absolute;
+            bottom: -10vh;
+            left: -10vw;
+            width: 120vw;
+            height: 40vh;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
             filter: blur(20px);
+            animation: mistFlow 6s ease-in-out infinite alternate;
+        }
+
+        @keyframes mistFlow {
+            0% { transform: translateY(0) scale(1); opacity: 0.6; }
+            100% { transform: translateY(-30px) scale(1.1); opacity: 0.9; }
+        }
+
+        /* The Railway Bridge */
+        .bridge {
+            position: absolute;
+            top: 55%;
+            left: 0;
+            width: 100vw;
+            height: 15px;
+            background: #111;
+            border-top: 2px solid #333;
+            border-bottom: 3px solid #000;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
             z-index: 2;
         }
 
-        .grid-floor, .grid-ceiling {
+        /* The Train */
+        .train {
             position: absolute;
-            width: 200vw;
-            height: 100vh;
-            left: -50vw;
-            background-size: 40px 40px;
-            animation: gridMove 2s linear infinite;
+            top: calc(55% - 3.2rem); /* Sits right on the bridge */
+            right: -150vw; /* Starts off-screen right */
+            font-size: 3rem; /* Giant mobile-friendly size */
+            white-space: nowrap;
+            z-index: 3;
+            animation: chugChug 7s linear forwards;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.4));
         }
 
-        .grid-floor {
-            bottom: -30vh;
-            transform: rotateX(75deg);
-            background-image: 
-                linear-gradient(to right, rgba(255, 0, 60, 0.4) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 0, 60, 0.4) 1px, transparent 1px);
-            box-shadow: inset 0 0 120px #020408;
+        @keyframes chugChug {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-250vw); } /* Moves all the way left */
         }
 
-        .grid-ceiling {
-            top: -30vh;
-            transform: rotateX(-75deg);
-            background-image: 
-                linear-gradient(to right, rgba(0, 243, 255, 0.3) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(0, 243, 255, 0.3) 1px, transparent 1px);
-            box-shadow: inset 0 0 120px #020408;
-        }
-
-        @keyframes gridMove {
-            0% { background-position: 0 0; }
-            100% { background-position: 0 40px; }
-        }
-
-        /* --- ADVANCED HUD PANEL (MOBILE OPTIMIZED) --- */
+        /* --- GLASSMORPHIC HUD PANEL --- */
         .hud-box {
             position: relative;
             z-index: 10;
             width: 92%;
             max-width: 480px;
             min-height: 380px;
-            background: rgba(4, 8, 14, 0.85);
-            border: 2px solid #00f3ff;
-            box-shadow: 0 0 25px rgba(0, 243, 255, 0.3), inset 0 0 25px rgba(0, 243, 255, 0.2);
+            background: rgba(4, 15, 10, 0.65); /* Dark green glass */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(162, 255, 204, 0.3);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05);
             padding: 25px 20px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            clip-path: polygon(15px 0, calc(100% - 15px) 0, 100% 15px, 100% calc(100% - 15px), calc(100% - 15px) 100%, 15px 100%, 0 calc(100% - 15px), 0 15px);
         }
-
-        /* Animated corner accents */
-        .hud-box::before, .hud-box::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            border-color: #ff003c;
-            border-style: solid;
-            transition: all 0.3s;
-        }
-        .hud-box::before { top: 8px; left: 8px; border-width: 2px 0 0 2px; }
-        .hud-box::after { bottom: 8px; right: 8px; border-width: 0 2px 2px 0; }
-
-        /* Scanning Laser Line */
-        .scan-line {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, transparent, #ff003c, #00f3ff, transparent);
-            opacity: 0.7;
-            animation: scan 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes scan {
-            0% { top: 5%; }
-            100% { top: 90%; }
-        }
-
-        /* --- 3D SPINNING CORE --- */
-        .loader-ring {
-            width: 70px;
-            height: 70px;
-            border: 3px solid transparent;
-            border-top: 3px solid #00f3ff;
-            border-bottom: 3px solid #ff003c;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
-        }
-
-        @keyframes spin { 100% { transform: rotate(360deg); } }
 
         /* --- TYPOGRAPHY (LARGE FOR MOBILE) --- */
         .text-line {
@@ -152,22 +134,21 @@
             font-weight: bold;
             line-height: 1.6;
             margin: 6px 0;
-            text-shadow: 0 0 8px rgba(0, 243, 255, 0.8);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
         }
 
-        .highlight-cyan { color: #00f3ff; text-shadow: 0 0 12px #00f3ff; }
-        .highlight-red { color: #ff003c; text-shadow: 0 0 12px #ff003c; }
-        .highlight-white { color: #ffffff; text-shadow: 0 0 15px #ffffff; }
+        .highlight-green { color: #5effa8; text-shadow: 0 0 10px rgba(94, 255, 168, 0.6); }
+        .highlight-white { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.8); }
 
         .hidden { display: none !important; }
         
         .fade-in {
-            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.92); }
-            to { opacity: 1; transform: scale(1); }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* --- GRAND IDENTITY REVEAL STYLING --- */
@@ -183,12 +164,12 @@
             color: #ffffff;
             font-weight: 900;
             letter-spacing: 2px;
-            text-shadow: 0 0 15px #00f3ff, 0 0 30px #00f3ff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
         }
 
         .name-secondary {
             font-size: 1.2rem;
-            color: #00f3ff;
+            color: #5effa8;
             font-weight: bold;
             letter-spacing: 1px;
         }
@@ -203,83 +184,79 @@
 
         .tag {
             padding: 5px 12px;
-            border: 1px solid #ff003c;
-            background: rgba(255, 0, 60, 0.15);
-            color: #ff003c;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
             font-size: 0.95rem;
             font-weight: bold;
             letter-spacing: 1px;
-            box-shadow: 0 0 10px rgba(255, 0, 60, 0.4);
+            border-radius: 4px;
         }
 
-        .tag-cyan {
-            border-color: #00f3ff;
-            background: rgba(0, 243, 255, 0.15);
-            color: #00f3ff;
-            box-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
+        .tag-green {
+            border-color: #5effa8;
+            background: rgba(94, 255, 168, 0.15);
+            color: #5effa8;
         }
 
         .role-title {
             font-size: 1.1rem;
-            color: #ff003c;
+            color: #ffffff;
             font-weight: 800;
             margin-top: 10px;
             letter-spacing: 1.5px;
-            animation: pulseText 1s infinite alternate;
+            text-transform: uppercase;
         }
 
-        @keyframes pulseText {
-            from { opacity: 0.7; }
-            to { opacity: 1; text-shadow: 0 0 15px #ff003c; }
+        /* --- MIST WHITEOUT EXIT ANIMATION --- */
+        .mist-exit {
+            animation: whiteOut 0.8s forwards;
         }
 
-        /* --- WARP SPEED EXIT ANIMATION --- */
-        .warp-exit {
-            animation: warpOut 0.8s forwards cubic-bezier(0.7, 0, 0.84, 0);
-        }
-
-        @keyframes warpOut {
-            0% { opacity: 1; transform: scale(1); filter: brightness(1); }
-            50% { filter: brightness(3) blur(2px); }
-            100% { opacity: 0; transform: scale(2.5); filter: brightness(5) blur(10px); }
+        @keyframes whiteOut {
+            0% { opacity: 1; filter: brightness(1); }
+            100% { opacity: 0; filter: brightness(10) blur(20px); transform: scale(1.1); }
         }
     </style>
 </head>
 <body>
 
-    <div class="viewport-3d">
-        <div class="horizon-glow"></div>
-        <div class="grid-ceiling"></div>
-        <div class="grid-floor"></div>
+    <!-- Dudhsagar Scenery -->
+    <div class="scenery-container">
+        <div class="waterfall"></div>
+        <div class="bridge"></div>
+        <div class="train">🚂🚋🚃🚋🚃🚋🚃🚋🚃🚋🚃</div>
+        <div class="mist"></div>
     </div>
 
+    <!-- Glassmorphic HUD Console -->
     <div class="hud-box" id="hud">
-        <div class="scan-line"></div>
         
-        <div class="loader-ring" id="loader"></div>
-        
-        <div id="step-sync" class="hidden text-line">
-            <div class="highlight-cyan" style="font-size: 1.3rem; margin-bottom: 12px;">[ SYSTEM INITIALIZING ]</div>
-            <div>> SYNCING CLOCK...</div>
+        <!-- Step 1: Network & Time Sync -->
+        <div id="step-sync" class="text-line">
+            <div class="highlight-green" style="font-size: 1.3rem; margin-bottom: 12px;">[ ENVIRONMENT SYNC ]</div>
+            <div>> LOCAL TIME DETECTED...</div>
             <div style="margin-top: 8px;">DATE: <span id="clock-date" class="highlight-white"></span></div>
             <div>TIME: <span id="clock-time" class="highlight-white"></span></div>
         </div>
 
+        <!-- Step 2: Personalized AI Greeting -->
         <div id="step-greet" class="hidden text-line">
-            <div class="highlight-red" style="font-size: 1.1rem; margin-bottom: 10px;">[ STATUS: BIOMETRIC AUTH OK ]</div>
-            <div id="dynamic-greeting" class="highlight-cyan" style="font-size: 1.25rem; line-height: 1.5;"></div>
+            <div class="highlight-white" style="font-size: 1.1rem; margin-bottom: 10px;">[ PRESENCE VERIFIED ]</div>
+            <div id="dynamic-greeting" class="highlight-green" style="font-size: 1.25rem; line-height: 1.5;"></div>
         </div>
 
+        <!-- Step 3: Grand Name & Identity Reveal -->
         <div id="step-identity" class="hidden identity-container">
             <div class="name-primary">JAYA KUMAR</div>
             <div class="name-secondary">( S JAYA KUMAR )</div>
             
             <div class="aliases-wrapper">
                 <span class="tag">STARK DEV</span>
-                <span class="tag tag-cyan">JACK</span>
+                <span class="tag tag-green">JACK</span>
             </div>
             
-            <div class="role-title">> FULL-STACK DEVELOPER <</div>
+            <div class="role-title">FULL-STACK DEVELOPER</div>
         </div>
     </div>
 
@@ -322,36 +299,29 @@
             document.getElementById('dynamic-greeting').textContent = greetingString;
 
             // 3. EXACT 7-SECOND CHOREOGRAPHY
-            const loader = document.getElementById('loader');
             const stepSync = document.getElementById('step-sync');
             const stepGreet = document.getElementById('step-greet');
             const stepIdentity = document.getElementById('step-identity');
-            const hud = document.getElementById('hud');
 
-            // 0.0s to 1.5s: Spinning Holographic Loader
-            setTimeout(() => {
-                loader.classList.add('hidden');
-                stepSync.classList.remove('hidden');
-                stepSync.classList.add('fade-in');
-            }, 1500);
-
-            // 1.5s to 3.5s: Dynamic Greeting
+            // 0.0s to 2.5s: Time Sync shows as the train rolls in
+            
+            // 2.5s to 4.5s: Dynamic Greeting
             setTimeout(() => {
                 stepSync.classList.add('hidden');
                 stepGreet.classList.remove('hidden');
                 stepGreet.classList.add('fade-in');
-            }, 3500);
+            }, 2500);
 
-            // 3.5s to 6.2s: Grand Name & Identity Reveal
+            // 4.5s to 6.2s: Grand Name & Identity Reveal
             setTimeout(() => {
                 stepGreet.classList.add('hidden');
                 stepIdentity.classList.remove('hidden');
                 stepIdentity.classList.add('fade-in');
-            }, 5000);
+            }, 4500);
 
-            // 6.2s to 7.0s: Warp Speed Screen Transition
+            // 6.2s to 7.0s: Mist Whiteout Transition
             setTimeout(() => {
-                document.body.classList.add('warp-exit');
+                document.body.classList.add('mist-exit');
             }, 6200);
 
             // 7.0s: Automatic Redirect to Main Landing Page
