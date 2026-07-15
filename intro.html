@@ -37,13 +37,12 @@
             --celestial-color: #FFD700; 
             --celestial-shadow: 0 0 60px #FFD700, 0 0 120px #FF8C00;
             --building-bg: linear-gradient(to bottom, #152233 0%, #0c1520 100%);
-            /* Tinted dark daytime windows, NO glowing lights */
             --window-color1: rgba(30, 50, 70, 0.6); 
             --window-color2: rgba(25, 60, 80, 0.6);
             --gate-glow: rgba(40, 60, 80, 0.5);
             --road-color: #1a1e24;
             --lamp-glow: none;
-            --lamp-bulb: #777777; /* Lamps turned off */
+            --lamp-bulb: #777777;
             --cloud-opacity: 0.9;
             --star-opacity: 0;
         }
@@ -70,31 +69,30 @@
             color: #ffffff;
             overflow: hidden;
             height: 100dvh; 
-            width: 100vw;
+            width: 100%;
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding-top: 15dvh; 
+            padding-top: clamp(8vh, 12vh, 15vh); /* Fully responsive top padding */
             position: relative;
             transition: background 2s ease-in-out;
         }
 
         /* --- SKY, FLIGHTS & CELESTIAL LAYER --- */
         .sky-layer {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100%; z-index: 1; overflow: hidden;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; overflow: hidden;
         }
 
         .celestial-body {
-            position: absolute; left: 50%; top: 12vh;
+            position: absolute; left: 50%; top: 10vh;
             transform: translateX(-50%);
-            width: 75px; height: 75px;
+            width: clamp(55px, 8vw, 85px); height: clamp(55px, 8vw, 85px);
             border-radius: 50%;
             background: var(--celestial-color);
             box-shadow: var(--celestial-shadow);
             z-index: 2;
         }
 
-        /* Twinkling Stars */
         .stars {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: var(--star-opacity); transition: opacity 2s;
         }
@@ -108,9 +106,8 @@
         }
         @keyframes twinkle { 0% { opacity: 0.2; } 100% { opacity: 1; } }
 
-        /* Drifting Clouds */
         .clouds {
-            position: absolute; top: 10%; left: 0; width: 100vw; height: 30vh; z-index: 2; opacity: var(--cloud-opacity); pointer-events: none;
+            position: absolute; top: 10%; left: 0; width: 100%; height: 30vh; z-index: 2; opacity: var(--cloud-opacity); pointer-events: none;
         }
         .cloud { position: absolute; background: #fff; border-radius: 50px; filter: blur(3px); }
         .cloud::before, .cloud::after { content: ''; position: absolute; background: #fff; border-radius: 50%; }
@@ -123,174 +120,153 @@
         @keyframes floatRight { 0% { transform: translateX(-20vw); } 100% { transform: translateX(110vw); } }
         @keyframes floatLeft { 0% { transform: translateX(110vw); } 100% { transform: translateX(-20vw); } }
 
-        /* Commercial Flight (Airplane) with Headlight & Nav Light */
+        /* Commercial Flight (Airplane) */
         .airplane {
-            position: absolute; top: 22vh; right: -50px;
-            width: 28px; height: 8px;
-            background: #333;
+            position: absolute; top: 18vh; right: -50px;
+            width: 28px; height: 8px; background: #333;
             border-radius: 50% 50% 50% 50% / 80% 80% 20% 20%;
-            z-index: 3;
-            animation: flyAcross 22s linear infinite;
+            z-index: 3; animation: flyAcross 22s linear infinite;
         }
-        .airplane::before { /* White Headlight Beam */
+        .airplane::before {
             content: ''; position: absolute; top: 2px; left: -20px;
             width: 20px; height: 4px;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8));
             border-radius: 50%;
         }
-        .airplane::after { /* Blinking Red Nav Light */
+        .airplane::after {
             content: ''; position: absolute; top: -3px; left: 12px;
-            width: 4px; height: 4px;
-            border-radius: 50%;
+            width: 4px; height: 4px; border-radius: 50%;
             background: red; box-shadow: 0 0 8px red;
             animation: blinkFast 0.8s infinite;
         }
         @keyframes flyAcross { 0% { transform: translateX(10vw) scale(0.8); } 100% { transform: translateX(-110vw) scale(1); } }
         @keyframes blinkFast { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
 
-        /* --- CITY SKYLINE & GATES FOR ALL BUILDINGS --- */
+        /* --- CITY SKYLINE (FLEXBOX TO PREVENT CLIPPING ON ALL DEVICES) --- */
         .city-skyline {
-            position: absolute; bottom: 70px; left: 0; width: 100vw; height: 45vh;
+            position: absolute; bottom: 65px; left: 0; width: 100%; height: clamp(30vh, 42vh, 50vh);
             z-index: 4; pointer-events: none;
+            display: flex; align-items: flex-end; justify-content: space-between;
         }
 
         .building {
-            position: absolute; bottom: 0;
+            position: relative; height: 100%;
             background: var(--building-bg);
             border-top: 1px solid rgba(255,255,255,0.15);
             border-right: 1px solid rgba(0,0,0,0.6);
             box-shadow: inset -5px 0 15px rgba(0,0,0,0.5);
             transition: background 2s;
+            flex-grow: 1;
         }
         .building::before {
             content: ''; position: absolute; top: 10px; left: 0; right: 0; bottom: 15px;
-            background-position: center top;
-            transition: background-image 2s;
+            background-position: center top; transition: background-image 2s;
         }
-        /* Entrance Gates for ALL buildings */
         .building::after {
             content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-            height: 14px;
-            background: var(--gate-glow);
+            height: 12px; background: var(--gate-glow);
             box-shadow: 0 0 10px var(--gate-glow);
-            border-radius: 2px 2px 0 0;
-            transition: all 2s;
+            border-radius: 2px 2px 0 0; transition: all 2s;
         }
 
-        .b1 { left: 0vw; width: 18vw; height: 26vh; }
+        .b1 { width: 18%; height: 60%; }
         .b1::before { background-image: radial-gradient(circle, var(--window-color1) 1.5px, transparent 2px); background-size: 14px 20px; }
-        .b1::after { width: 25px; }
+        .b1::after { width: 25%; }
 
-        .b2 { left: 17vw; width: 22vw; height: 38vh; z-index: 5; }
+        .b2 { width: 22%; height: 85%; z-index: 5; }
         .b2::before { background-image: radial-gradient(circle, var(--window-color2) 1.5px, transparent 2px); background-size: 18px 24px; }
-        .b2::after { width: 35px; height: 18px; }
+        .b2::after { width: 30%; height: 16px; }
 
-        .b3 { left: 38vw; width: 26vw; height: 32vh; }
+        .b3 { width: 24%; height: 75%; }
         .b3::before { background-image: radial-gradient(circle, var(--window-color1) 1px, transparent 1.5px); background-size: 12px 18px; }
-        .b3::after { width: 45px; height: 22px; } /* Main center gate is largest */
+        .b3::after { width: 35%; height: 20px; }
 
-        .b4 { left: 63vw; width: 20vw; height: 42vh; z-index: 5; }
+        .b4 { width: 20%; height: 95%; z-index: 5; }
         .b4::before { background-image: radial-gradient(circle, var(--window-color2) 2px, transparent 2.5px); background-size: 20px 28px; }
-        .b4::after { width: 30px; height: 16px; }
+        .b4::after { width: 28%; height: 16px; }
 
-        .b5 { left: 82vw; width: 18vw; height: 22vh; }
+        .b5 { width: 16%; height: 50%; }
         .b5::before { background-image: radial-gradient(circle, var(--window-color1) 1.5px, transparent 2px); background-size: 16px 22px; }
-        .b5::after { width: 20px; }
+        .b5::after { width: 30%; }
 
-        /* --- THE HIGHWAY, LAMPS & ACTUAL VEHICLES --- */
+        /* --- THE HIGHWAY (100% WIDTH GUARANTEED) --- */
         .highway {
             position: absolute; bottom: 0; left: 0; right: 0;
-            width: 100vw; height: 70px; 
+            width: 100%; height: 65px; 
             background: var(--road-color);
             border-top: 2px solid #1a1e29;
             box-shadow: 0 -15px 30px rgba(0,0,0,0.9);
             z-index: 6; overflow: visible;
         }
 
-        /* Street Lamps */
         .street-lamps {
-            position: absolute; top: -40px; left: 0; width: 100%; height: 40px;
+            position: absolute; top: -35px; left: 0; width: 100%; height: 35px;
             display: flex; justify-content: space-around;
         }
         .lamp { position: relative; width: 3px; height: 100%; background: #222; }
         .lamp::before {
-            content: ''; position: absolute; top: -5px; left: -3px;
-            width: 9px; height: 9px; border-radius: 50%;
+            content: ''; position: absolute; top: -4px; left: -3px;
+            width: 8px; height: 8px; border-radius: 50%;
             background: var(--lamp-bulb); box-shadow: var(--lamp-glow);
             transition: all 2s;
         }
 
-        /* Dashed Road Line */
         .road-line {
-            position: absolute; top: 50%; left: 0; width: 200vw; height: 2px;
+            position: absolute; top: 50%; left: 0; width: 200%; height: 2px;
             background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0px, rgba(255, 255, 255, 0.4) 30px, transparent 30px, transparent 60px);
-            transform: translateY(-50%);
-            animation: driveRoad 0.7s linear infinite;
+            transform: translateY(-50%); animation: driveRoad 0.7s linear infinite;
         }
         @keyframes driveRoad { 100% { transform: translate3d(-60px, -50%, 0); } }
 
-        /* Actual Car Bodies with Light Beams */
         .traffic-stream { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-
         .car {
-            position: absolute; width: 26px; height: 12px;
-            background: #151515; border-radius: 3px;
-            box-shadow: inset 0 2px 4px rgba(255,255,255,0.3);
-            will-change: transform;
+            position: absolute; width: 24px; height: 10px; background: #151515; border-radius: 3px;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.3); will-change: transform;
         }
-
         .car-left-1 { top: 12px; animation: zoomLeft 3.5s linear infinite; }
-        .car-left-1::before { /* Headlight Beam */
-            content: ''; position: absolute; top: 2px; left: -35px;
-            width: 35px; height: 8px;
-            background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.9));
-            border-radius: 50%;
+        .car-left-1::before {
+            content: ''; position: absolute; top: 2px; left: -35px; width: 35px; height: 6px;
+            background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.9)); border-radius: 50%;
         }
-
         .car-left-2 { top: 18px; animation: zoomLeft 2.2s linear infinite 1.5s; }
         .car-left-2::before {
-            content: ''; position: absolute; top: 2px; left: -45px;
-            width: 45px; height: 8px;
+            content: ''; position: absolute; top: 2px; left: -45px; width: 45px; height: 6px;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9));
         }
-
         .car-right-1 { bottom: 12px; animation: zoomRight 2.8s linear infinite 0.5s; }
-        .car-right-1::after { /* Red Taillight Glow */
-            content: ''; position: absolute; top: 2px; right: -25px;
-            width: 25px; height: 8px;
+        .car-right-1::after {
+            content: ''; position: absolute; top: 2px; right: -25px; width: 25px; height: 6px;
             background: linear-gradient(-90deg, transparent, rgba(255, 0, 60, 0.9));
         }
-
         @keyframes zoomLeft { 0% { transform: translate3d(110vw, 0, 0); } 100% { transform: translate3d(-100px, 0, 0); } }
         @keyframes zoomRight { 0% { transform: translate3d(-100px, 0, 0); } 100% { transform: translate3d(110vw, 0, 0); } }
 
-        /* --- HUD CONSOLE (MINIMAL & FOCUSED) --- */
+        /* --- HUD CONSOLE (FLEXIBLE FOR ALL SCREENS) --- */
         .hud-box {
             position: relative; z-index: 10;
-            width: 90%; max-width: 440px; min-height: 240px;
+            width: 88%; max-width: 500px; min-height: clamp(220px, 28vh, 260px);
             background: rgba(4, 7, 12, 0.85);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(0, 243, 255, 0.3);
             border-radius: 12px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(0, 243, 255, 0.1);
-            padding: 24px 20px;
+            padding: clamp(18px, 4vw, 28px);
             display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
         }
 
-        .text-line { font-size: 1.15rem; font-weight: bold; line-height: 1.6; margin: 4px 0; text-shadow: 0 2px 5px rgba(0,0,0,0.9); }
+        /* --- TYPOGRAPHY & ANIMATIONS --- */
+        .text-line { font-size: clamp(1rem, 3vw, 1.25rem); font-weight: bold; line-height: 1.6; margin: 4px 0; text-shadow: 0 2px 5px rgba(0,0,0,0.9); }
         .highlight-cyan { color: #00f3ff; text-shadow: 0 0 12px rgba(0,243,255,0.6); }
         .highlight-white { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.8); }
+        .highlight-gold { color: #ffd700; text-shadow: 0 0 12px rgba(255,215,0,0.6); }
         
         .hidden { display: none !important; }
-        .fade-in { animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
-        .name-primary { font-size: 1.8rem; color: #ffffff; font-weight: 900; letter-spacing: 2px; }
-        .name-secondary { font-size: 1.2rem; color: #00f3ff; font-weight: bold; }
-        .aliases-wrapper { display: flex; justify-content: center; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
-        .tag { padding: 4px 12px; border: 1px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.1); color: #fff; font-size: 0.95rem; font-weight: bold; border-radius: 4px; }
-        .tag-cyan { border-color: #00f3ff; background: rgba(0,243,255,0.15); color: #00f3ff; }
-        .role-title { font-size: 1.1rem; color: #ffffff; font-weight: 800; margin-top: 8px; letter-spacing: 1.5px; text-transform: uppercase; }
+        .name-primary { font-size: clamp(1.5rem, 5vw, 2rem); color: #ffffff; font-weight: 900; letter-spacing: 2px; }
+        .name-secondary { font-size: clamp(1rem, 3.5vw, 1.3rem); color: #00f3ff; font-weight: bold; margin-top: 6px; }
+        .role-title { font-size: clamp(0.9rem, 3vw, 1.15rem); color: #ffd700; font-weight: 800; margin-top: 12px; letter-spacing: 1.5px; text-transform: uppercase; }
 
         .city-exit { animation: fadeOut 0.8s forwards; }
         @keyframes fadeOut { 100% { opacity: 0; filter: blur(12px); transform: scale(1.15); } }
@@ -301,50 +277,46 @@
     <div class="sky-layer">
         <div class="stars"></div>
         <div class="celestial-body"></div>
-        <div class="clouds">
-            <div class="cloud cloud-1"></div>
-            <div class="cloud cloud-2"></div>
-        </div>
+        <div class="clouds"><div class="cloud cloud-1"></div><div class="cloud cloud-2"></div></div>
         <div class="airplane"></div>
     </div>
 
     <div class="city-skyline">
-        <div class="building b1"></div>
-        <div class="building b2"></div>
-        <div class="building b3"></div>
-        <div class="building b4"></div>
-        <div class="building b5"></div>
+        <div class="building b1"></div><div class="building b2"></div><div class="building b3"></div><div class="building b4"></div><div class="building b5"></div>
     </div>
 
     <div class="highway">
-        <div class="street-lamps">
-            <div class="lamp"></div><div class="lamp"></div><div class="lamp"></div><div class="lamp"></div><div class="lamp"></div>
-        </div>
+        <div class="street-lamps"><div class="lamp"></div><div class="lamp"></div><div class="lamp"></div><div class="lamp"></div><div class="lamp"></div></div>
         <div class="road-line"></div>
-        <div class="traffic-stream">
-            <div class="car car-left-1"></div>
-            <div class="car car-left-2"></div>
-            <div class="car car-right-1"></div>
-        </div>
+        <div class="traffic-stream"><div class="car car-left-1"></div><div class="car car-left-2"></div><div class="car car-right-1"></div></div>
     </div>
 
     <div class="hud-box" id="hud">
         
-        <div id="step-greet" class="text-line fade-in">
-            <div style="margin-bottom: 5px;">DATE: <span id="clock-date" class="highlight-white"></span></div>
-            <div style="margin-bottom: 12px;">TIME: <span id="clock-time" class="highlight-white"></span></div>
-            <div id="dynamic-greeting" class="highlight-cyan" style="font-size: 1.25rem; line-height: 1.4;"></div>
+        <div id="step-time-greet" class="text-line fade-in">
+            <div id="dynamic-time-greet" class="highlight-cyan" style="font-size: clamp(1.2rem, 4vw, 1.5rem);"></div>
+        </div>
+
+        <div id="step-datetime" class="hidden text-line">
+            <div style="margin-bottom: 8px;">DATE: <span id="clock-date" class="highlight-white"></span></div>
+            <div>TIME: <span id="clock-time" class="highlight-white"></span></div>
+        </div>
+
+        <div id="step-welcome" class="hidden text-line">
+            <div class="highlight-gold" style="font-size: clamp(1.2rem, 4vw, 1.5rem);">> Welcome Sir / Ma'am <</div>
+        </div>
+
+        <div id="step-portfolio" class="hidden text-line">
+            <div class="highlight-white" style="font-size: clamp(1.1rem, 3.5vw, 1.4rem); letter-spacing: 1px;">A STARK DEV</div>
+            <div class="highlight-cyan" style="font-size: clamp(1.1rem, 3.5vw, 1.4rem); letter-spacing: 1px; margin-top: 6px;">CAREER PORTFOLIO</div>
         </div>
         
-        <div id="step-identity" class="hidden" style="width: 100%; display: flex; flex-direction: column; gap: 6px;">
+        <div id="step-identity" class="hidden" style="width: 100%; display: flex; flex-direction: column; justify-content: center;">
             <div class="name-primary">JAYA KUMAR</div>
             <div class="name-secondary">( S JAYA KUMAR )</div>
-            <div class="aliases-wrapper">
-                <span class="tag">STARK DEV</span>
-                <span class="tag tag-cyan">JACK</span>
-            </div>
-            <div class="role-title">FULL-STACK DEVELOPER</div>
+            <div class="role-title">> A DEVELOPER <</div>
         </div>
+
     </div>
 
     <script>
@@ -363,15 +335,15 @@
                 const body = document.getElementById('dynamic-body');
                 body.classList.remove('theme-day', 'theme-sunset', 'theme-night');
 
-                let timeOfDay = "evening";
+                let timeOfDay = "Evening";
                 if (currentHour >= 6 && currentHour < 16) {
                     body.classList.add('theme-day');
-                    timeOfDay = currentHour >= 12 ? "afternoon" : "morning";
+                    timeOfDay = currentHour >= 12 ? "Afternoon" : "Morning";
                 } else if (currentHour >= 16 && currentHour < 19) {
                     body.classList.add('theme-sunset');
                 } else {
                     body.classList.add('theme-night');
-                    if(currentHour >= 0 && currentHour < 6) timeOfDay = "morning";
+                    if(currentHour >= 0 && currentHour < 6) timeOfDay = "Morning";
                 }
                 return timeOfDay;
             }
@@ -379,25 +351,50 @@
             let greetingTime = runClockAndTheme();
             setInterval(runClockAndTheme, 1000);
             
-            // Clean, direct greeting
-            document.getElementById('dynamic-greeting').textContent = `> Good ${greetingTime} and welcome to portfolio sir / ma'am.`;
+            // Set dynamic greeting
+            document.getElementById('dynamic-time-greet').textContent = `> Good ${greetingTime} <`;
 
-            const stepGreet = document.getElementById('step-greet');
+            // Step references
+            const stepTimeGreet = document.getElementById('step-time-greet');
+            const stepDatetime = document.getElementById('step-datetime');
+            const stepWelcome = document.getElementById('step-welcome');
+            const stepPortfolio = document.getElementById('step-portfolio');
             const stepIdentity = document.getElementById('step-identity');
 
-            // Simplified 7-Second Sequence
-            // 0s - 3.5s: Show Date, Time, and Greeting
+            // --- 15-SECOND EXACT TIMELINE CHOREOGRAPHY ---
+            // 3.0s: Reveal Date & Time
             setTimeout(() => { 
-                stepGreet.classList.add('hidden'); 
+                stepTimeGreet.classList.add('hidden'); 
+                stepDatetime.classList.remove('hidden'); 
+                stepDatetime.classList.add('fade-in'); 
+            }, 3000);
+
+            // 6.0s: Reveal Welcome Sir / Ma'am
+            setTimeout(() => { 
+                stepDatetime.classList.add('hidden'); 
+                stepWelcome.classList.remove('hidden'); 
+                stepWelcome.classList.add('fade-in'); 
+            }, 6000);
+
+            // 9.0s: Reveal A Stark Dev Career Portfolio
+            setTimeout(() => { 
+                stepWelcome.classList.add('hidden'); 
+                stepPortfolio.classList.remove('hidden'); 
+                stepPortfolio.classList.add('fade-in'); 
+            }, 9000);
+
+            // 12.0s: Reveal Jaya Kumar ( a developer )
+            setTimeout(() => { 
+                stepPortfolio.classList.add('hidden'); 
                 stepIdentity.classList.remove('hidden'); 
                 stepIdentity.classList.add('fade-in'); 
-            }, 3500);
+            }, 12000);
 
-            // 6.2s: Trigger cinematic warp exit
-            setTimeout(() => { document.body.classList.add('city-exit'); }, 6200);
+            // 14.3s: Trigger cinematic exit
+            setTimeout(() => { document.body.classList.add('city-exit'); }, 14300);
 
-            // 7.0s: Redirect to landing page
-            setTimeout(() => { window.location.href = 'home.html'; }, 7000);
+            // 15.0s: Redirect to landing page
+            setTimeout(() => { window.location.href = 'home.html'; }, 15000);
         });
     </script>
 </body>
