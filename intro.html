@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>System Boot | Dudhsagar Intro</title>
+    <title>System Boot | Dudhsagar Falls</title>
     <style>
         /* --- GLOBAL RESET & THEME --- */
         * {
@@ -14,19 +14,20 @@
         }
         
         body {
-            background-color: #05140a; /* Deep Jungle Green */
+            background-color: #020a04; /* Deep Night Jungle Green */
             color: #ffffff;
             overflow: hidden;
             height: 100vh;
             width: 100vw;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
+            padding-top: 12vh; /* Pushes HUD up away from the train tracks */
             position: relative;
         }
 
-        /* --- DUDHSAGAR FALLS PURE CSS ART --- */
-        .scenery-container {
+        /* --- DUDHSAGAR FALLS & JUNGLE GORGE --- */
+        .scenery-viewport {
             position: absolute;
             top: 0;
             left: 0;
@@ -34,93 +35,149 @@
             height: 100vh;
             z-index: 1;
             overflow: hidden;
+            background: linear-gradient(to bottom, #010602 0%, #051a0a 100%);
         }
 
-        /* The cascading water */
-        .waterfall {
+        /* Dark Jungle Cliffs framing the sides */
+        .cliff-left, .cliff-right {
             position: absolute;
             top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 120vw;
+            width: 35vw;
             height: 100vh;
-            background: linear-gradient(to bottom, 
-                rgba(255,255,255,0.1) 0%, 
-                rgba(200,240,255,0.6) 50%, 
-                rgba(255,255,255,0.9) 100%);
-            background-size: 100% 200%;
-            animation: cascade 2s linear infinite;
-            mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
-            -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 60%);
+            background: #010803;
+            z-index: 3;
+        }
+        .cliff-left {
+            left: 0;
+            box-shadow: 20px 0 50px rgba(0,0,0,0.9);
+            border-right: 2px solid #0a2912;
+        }
+        .cliff-right {
+            right: 0;
+            box-shadow: -20px 0 50px rgba(0,0,0,0.9);
+            border-left: 2px solid #0a2912;
         }
 
-        @keyframes cascade {
+        /* Rushing Water Columns */
+        .waterfall-core {
+            position: absolute;
+            top: 0;
+            left: 25vw;
+            width: 50vw;
+            height: 100vh;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(200,245,255,0.8) 70%, rgba(255,255,255,0.95) 100%);
+            z-index: 2;
+        }
+
+        .waterfall-streams {
+            position: absolute;
+            top: 0;
+            left: 25vw;
+            width: 50vw;
+            height: 100vh;
+            background: repeating-linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0px,
+                rgba(255, 255, 255, 0.4) 8px,
+                rgba(180, 240, 255, 0.7) 16px,
+                rgba(255, 255, 255, 0) 24px
+            );
+            background-size: 100% 200%;
+            animation: rushDown 0.4s linear infinite;
+            z-index: 2;
+            opacity: 0.8;
+        }
+
+        @keyframes rushDown {
             0% { background-position: 0 0%; }
             100% { background-position: 0 100%; }
         }
 
-        /* The heavy mist at the bottom */
-        .mist {
+        /* Heavy Mist Cloud at Base */
+        .mist-cloud {
             position: absolute;
-            bottom: -10vh;
-            left: -10vw;
-            width: 120vw;
-            height: 40vh;
-            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
-            filter: blur(20px);
-            animation: mistFlow 6s ease-in-out infinite alternate;
-        }
-
-        @keyframes mistFlow {
-            0% { transform: translateY(0) scale(1); opacity: 0.6; }
-            100% { transform: translateY(-30px) scale(1.1); opacity: 0.9; }
-        }
-
-        /* The Railway Bridge */
-        .bridge {
-            position: absolute;
-            top: 55%;
+            bottom: 0;
             left: 0;
             width: 100vw;
-            height: 15px;
-            background: #111;
-            border-top: 2px solid #333;
-            border-bottom: 3px solid #000;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            z-index: 2;
+            height: 35vh;
+            background: linear-gradient(to top, rgba(255,255,255,0.9) 0%, rgba(200,240,255,0.5) 50%, transparent 100%);
+            filter: blur(12px);
+            z-index: 4;
+            animation: mistBillow 4s ease-in-out infinite alternate;
         }
 
-        /* The Train */
-        .train {
+        @keyframes mistBillow {
+            0% { transform: scaleY(1) translateY(0); opacity: 0.8; }
+            100% { transform: scaleY(1.15) translateY(-15px); opacity: 1; }
+        }
+
+        /* --- RAILWAY BRIDGE & MOVING TRAIN (LOWER THIRD) --- */
+        .railway-bridge {
             position: absolute;
-            top: calc(55% - 3.2rem); /* Sits right on the bridge */
-            right: -150vw; /* Starts off-screen right */
-            font-size: 3rem; /* Giant mobile-friendly size */
+            bottom: 20%;
+            left: 0;
+            width: 100vw;
+            height: 16px;
+            background: #151515;
+            border-top: 3px solid #444;
+            border-bottom: 4px solid #000;
+            box-shadow: 0 15px 25px rgba(0,0,0,0.8);
+            z-index: 5; /* Sits in front of cliffs and mist */
+        }
+
+        .bridge-pillars {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100vw;
+            height: 20%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent 0%,
+                transparent 12%,
+                #0d0d0d 12%,
+                #1a1a1a 15%,
+                transparent 15%
+            );
+            z-index: 4;
+        }
+
+        .train-track {
+            position: absolute;
+            bottom: calc(20% - 2.8rem);
+            left: 0;
+            width: 100vw;
+            z-index: 6; /* Sits in front of everything */
+        }
+
+        .train-emojis {
+            display: inline-block;
+            font-size: 2.6rem;
             white-space: nowrap;
-            z-index: 3;
-            animation: chugChug 7s linear forwards;
-            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.4));
+            filter: drop-shadow(0 5px 8px rgba(0,0,0,0.7));
+            animation: chugTrain 6.5s linear forwards;
+            will-change: transform;
         }
 
-        @keyframes chugChug {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-250vw); } /* Moves all the way left */
+        @keyframes chugTrain {
+            0% { transform: translate3d(100vw, 0, 0); }
+            100% { transform: translate3d(-250vw, 0, 0); }
         }
 
-        /* --- GLASSMORPHIC HUD PANEL --- */
+        /* --- GLASSMORPHIC HUD CONSOLE (CENTERED ABOVE TRACKS) --- */
         .hud-box {
             position: relative;
             z-index: 10;
-            width: 92%;
-            max-width: 480px;
-            min-height: 380px;
-            background: rgba(4, 15, 10, 0.65); /* Dark green glass */
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(162, 255, 204, 0.3);
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05);
-            padding: 25px 20px;
+            width: 90%;
+            max-width: 440px;
+            min-height: 320px;
+            background: rgba(2, 12, 6, 0.85); /* Darker, high-contrast jungle glass */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 2px solid #00ff73;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 0 20px rgba(0, 255, 115, 0.15);
+            padding: 22px 18px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -128,48 +185,48 @@
             text-align: center;
         }
 
-        /* --- TYPOGRAPHY (LARGE FOR MOBILE) --- */
+        /* --- TYPOGRAPHY --- */
         .text-line {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: bold;
             line-height: 1.6;
             margin: 6px 0;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.9);
         }
 
-        .highlight-green { color: #5effa8; text-shadow: 0 0 10px rgba(94, 255, 168, 0.6); }
+        .highlight-green { color: #00ff73; text-shadow: 0 0 10px rgba(0, 255, 115, 0.6); }
         .highlight-white { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.8); }
 
         .hidden { display: none !important; }
         
         .fade-in {
-            animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        /* --- GRAND IDENTITY REVEAL STYLING --- */
+        /* --- IDENTITY REVEAL --- */
         .identity-container {
             width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
         .name-primary {
-            font-size: 1.8rem;
+            font-size: 1.7rem;
             color: #ffffff;
             font-weight: 900;
             letter-spacing: 2px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.9);
         }
 
         .name-secondary {
-            font-size: 1.2rem;
-            color: #5effa8;
+            font-size: 1.15rem;
+            color: #00ff73;
             font-weight: bold;
             letter-spacing: 1px;
         }
@@ -177,33 +234,34 @@
         .aliases-wrapper {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             margin: 8px 0;
             flex-wrap: wrap;
         }
 
         .tag {
-            padding: 5px 12px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 4px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: bold;
             letter-spacing: 1px;
             border-radius: 4px;
         }
 
         .tag-green {
-            border-color: #5effa8;
-            background: rgba(94, 255, 168, 0.15);
-            color: #5effa8;
+            border-color: #00ff73;
+            background: rgba(0, 255, 115, 0.15);
+            color: #00ff73;
+            box-shadow: 0 0 8px rgba(0, 255, 115, 0.4);
         }
 
         .role-title {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             color: #ffffff;
             font-weight: 800;
-            margin-top: 10px;
+            margin-top: 8px;
             letter-spacing: 1.5px;
             text-transform: uppercase;
         }
@@ -215,38 +273,40 @@
 
         @keyframes whiteOut {
             0% { opacity: 1; filter: brightness(1); }
-            100% { opacity: 0; filter: brightness(10) blur(20px); transform: scale(1.1); }
+            100% { opacity: 0; filter: brightness(8) blur(15px); transform: scale(1.08); }
         }
     </style>
 </head>
 <body>
 
-    <!-- Dudhsagar Scenery -->
-    <div class="scenery-container">
-        <div class="waterfall"></div>
-        <div class="bridge"></div>
-        <div class="train">🚂🚋🚃🚋🚃🚋🚃🚋🚃🚋🚃</div>
-        <div class="mist"></div>
+    <div class="scenery-viewport">
+        <div class="cliff-left"></div>
+        <div class="cliff-right"></div>
+        <div class="waterfall-core"></div>
+        <div class="waterfall-streams"></div>
+        <div class="bridge-pillars"></div>
+        <div class="mist-cloud"></div>
+        <div class="railway-bridge"></div>
     </div>
 
-    <!-- Glassmorphic HUD Console -->
+    <div class="train-track">
+        <div class="train-emojis">🚂🚋🚃🚋🚃🚋🚃🚋🚃🚋🚃🚋🚃</div>
+    </div>
+
     <div class="hud-box" id="hud">
         
-        <!-- Step 1: Network & Time Sync -->
         <div id="step-sync" class="text-line">
-            <div class="highlight-green" style="font-size: 1.3rem; margin-bottom: 12px;">[ ENVIRONMENT SYNC ]</div>
+            <div class="highlight-green" style="font-size: 1.25rem; margin-bottom: 10px;">[ ENVIRONMENT SYNC ]</div>
             <div>> LOCAL TIME DETECTED...</div>
             <div style="margin-top: 8px;">DATE: <span id="clock-date" class="highlight-white"></span></div>
             <div>TIME: <span id="clock-time" class="highlight-white"></span></div>
         </div>
 
-        <!-- Step 2: Personalized AI Greeting -->
         <div id="step-greet" class="hidden text-line">
-            <div class="highlight-white" style="font-size: 1.1rem; margin-bottom: 10px;">[ PRESENCE VERIFIED ]</div>
-            <div id="dynamic-greeting" class="highlight-green" style="font-size: 1.25rem; line-height: 1.5;"></div>
+            <div class="highlight-white" style="font-size: 1.05rem; margin-bottom: 10px;">[ PRESENCE VERIFIED ]</div>
+            <div id="dynamic-greeting" class="highlight-green" style="font-size: 1.2rem; line-height: 1.5;"></div>
         </div>
 
-        <!-- Step 3: Grand Name & Identity Reveal -->
         <div id="step-identity" class="hidden identity-container">
             <div class="name-primary">JAYA KUMAR</div>
             <div class="name-secondary">( S JAYA KUMAR )</div>
@@ -303,7 +363,7 @@
             const stepGreet = document.getElementById('step-greet');
             const stepIdentity = document.getElementById('step-identity');
 
-            // 0.0s to 2.5s: Time Sync shows as the train rolls in
+            // 0.0s to 2.5s: Time Sync shows while the train chugs onto the bridge below
             
             // 2.5s to 4.5s: Dynamic Greeting
             setTimeout(() => {
