@@ -67,13 +67,14 @@
         body {
             background: linear-gradient(to bottom, var(--sky-top), var(--sky-bottom));
             color: #ffffff;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: hidden;
             height: 100dvh; 
             width: 100%;
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding-top: clamp(8vh, 12vh, 15vh); /* Fully responsive top padding */
+            padding-top: clamp(8vh, 12vh, 15vh);
             position: relative;
             transition: background 2s ease-in-out;
         }
@@ -142,9 +143,9 @@
         @keyframes flyAcross { 0% { transform: translateX(10vw) scale(0.8); } 100% { transform: translateX(-110vw) scale(1); } }
         @keyframes blinkFast { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
 
-        /* --- CITY SKYLINE (FLEXBOX TO PREVENT CLIPPING ON ALL DEVICES) --- */
+        /* --- CITY SKYLINE (EDGE TO EDGE GUARANTEED) --- */
         .city-skyline {
-            position: absolute; bottom: 65px; left: 0; width: 100%; height: clamp(30vh, 42vh, 50vh);
+            position: absolute; bottom: 60px; left: 0; right: 0; width: 100%; height: clamp(30vh, 40vh, 48vh);
             z-index: 4; pointer-events: none;
             display: flex; align-items: flex-end; justify-content: space-between;
         }
@@ -156,7 +157,7 @@
             border-right: 1px solid rgba(0,0,0,0.6);
             box-shadow: inset -5px 0 15px rgba(0,0,0,0.5);
             transition: background 2s;
-            flex-grow: 1;
+            flex: 1 1 0%; /* Forces perfect equal distribution across any screen width */
         }
         .building::before {
             content: ''; position: absolute; top: 10px; left: 0; right: 0; bottom: 15px;
@@ -169,30 +170,30 @@
             border-radius: 2px 2px 0 0; transition: all 2s;
         }
 
-        .b1 { width: 18%; height: 60%; }
+        .b1 { height: 60%; }
         .b1::before { background-image: radial-gradient(circle, var(--window-color1) 1.5px, transparent 2px); background-size: 14px 20px; }
         .b1::after { width: 25%; }
 
-        .b2 { width: 22%; height: 85%; z-index: 5; }
+        .b2 { height: 85%; z-index: 5; }
         .b2::before { background-image: radial-gradient(circle, var(--window-color2) 1.5px, transparent 2px); background-size: 18px 24px; }
         .b2::after { width: 30%; height: 16px; }
 
-        .b3 { width: 24%; height: 75%; }
+        .b3 { height: 75%; }
         .b3::before { background-image: radial-gradient(circle, var(--window-color1) 1px, transparent 1.5px); background-size: 12px 18px; }
         .b3::after { width: 35%; height: 20px; }
 
-        .b4 { width: 20%; height: 95%; z-index: 5; }
+        .b4 { height: 95%; z-index: 5; }
         .b4::before { background-image: radial-gradient(circle, var(--window-color2) 2px, transparent 2.5px); background-size: 20px 28px; }
         .b4::after { width: 28%; height: 16px; }
 
-        .b5 { width: 16%; height: 50%; }
+        .b5 { height: 50%; }
         .b5::before { background-image: radial-gradient(circle, var(--window-color1) 1.5px, transparent 2px); background-size: 16px 22px; }
         .b5::after { width: 30%; }
 
         /* --- THE HIGHWAY (100% WIDTH GUARANTEED) --- */
         .highway {
             position: absolute; bottom: 0; left: 0; right: 0;
-            width: 100%; height: 65px; 
+            width: 100%; height: 60px; 
             background: var(--road-color);
             border-top: 2px solid #1a1e29;
             box-shadow: 0 -15px 30px rgba(0,0,0,0.9);
@@ -241,32 +242,45 @@
         @keyframes zoomLeft { 0% { transform: translate3d(110vw, 0, 0); } 100% { transform: translate3d(-100px, 0, 0); } }
         @keyframes zoomRight { 0% { transform: translate3d(-100px, 0, 0); } 100% { transform: translate3d(110vw, 0, 0); } }
 
-        /* --- HUD CONSOLE (FLEXIBLE FOR ALL SCREENS) --- */
+        /* --- HUD CONSOLE (GRID STACK TO PREVENT EMPTY BOX) --- */
         .hud-box {
             position: relative; z-index: 10;
-            width: 88%; max-width: 500px; min-height: clamp(220px, 28vh, 260px);
+            width: 88%; max-width: 480px; min-height: clamp(200px, 25vh, 240px);
             background: rgba(4, 7, 12, 0.85);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(0, 243, 255, 0.3);
             border-radius: 12px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(0, 243, 255, 0.1);
-            padding: clamp(18px, 4vw, 28px);
-            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            padding: clamp(16px, 4vw, 24px);
+            display: grid; /* Grid stacks all children in the exact same cell */
+            place-items: center;
+            text-align: center;
+        }
+
+        /* Every step sits in grid row 1, col 1 - ZERO empty space! */
+        .hud-step {
+            grid-area: 1 / 1;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            transform: translateY(8px);
+            pointer-events: none;
+        }
+
+        .hud-step.active {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         /* --- TYPOGRAPHY & ANIMATIONS --- */
-        .text-line { font-size: clamp(1rem, 3vw, 1.25rem); font-weight: bold; line-height: 1.6; margin: 4px 0; text-shadow: 0 2px 5px rgba(0,0,0,0.9); }
+        .text-line { font-size: clamp(1rem, 3vw, 1.2rem); font-weight: bold; line-height: 1.6; margin: 4px 0; text-shadow: 0 2px 5px rgba(0,0,0,0.9); }
         .highlight-cyan { color: #00f3ff; text-shadow: 0 0 12px rgba(0,243,255,0.6); }
         .highlight-white { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.8); }
         .highlight-gold { color: #ffd700; text-shadow: 0 0 12px rgba(255,215,0,0.6); }
         
-        .hidden { display: none !important; }
-        .fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-
-        .name-primary { font-size: clamp(1.5rem, 5vw, 2rem); color: #ffffff; font-weight: 900; letter-spacing: 2px; }
-        .name-secondary { font-size: clamp(1rem, 3.5vw, 1.3rem); color: #00f3ff; font-weight: bold; margin-top: 6px; }
-        .role-title { font-size: clamp(0.9rem, 3vw, 1.15rem); color: #ffd700; font-weight: 800; margin-top: 12px; letter-spacing: 1.5px; text-transform: uppercase; }
+        .name-primary { font-size: clamp(1.4rem, 4.5vw, 1.8rem); color: #ffffff; font-weight: 900; letter-spacing: 2px; }
+        .name-secondary { font-size: clamp(0.95rem, 3vw, 1.2rem); color: #00f3ff; font-weight: bold; margin-top: 4px; }
+        .role-title { font-size: clamp(0.85rem, 2.8vw, 1.1rem); color: #ffd700; font-weight: 800; margin-top: 10px; letter-spacing: 1.5px; text-transform: uppercase; }
 
         .city-exit { animation: fadeOut 0.8s forwards; }
         @keyframes fadeOut { 100% { opacity: 0; filter: blur(12px); transform: scale(1.15); } }
@@ -293,25 +307,25 @@
 
     <div class="hud-box" id="hud">
         
-        <div id="step-time-greet" class="text-line fade-in">
-            <div id="dynamic-time-greet" class="highlight-cyan" style="font-size: clamp(1.2rem, 4vw, 1.5rem);"></div>
+        <div id="step-1" class="hud-step active">
+            <div id="dynamic-time-greet" class="highlight-cyan" style="font-size: clamp(1.2rem, 4vw, 1.5rem); font-weight: bold;"></div>
         </div>
 
-        <div id="step-datetime" class="hidden text-line">
-            <div style="margin-bottom: 8px;">DATE: <span id="clock-date" class="highlight-white"></span></div>
-            <div>TIME: <span id="clock-time" class="highlight-white"></span></div>
+        <div id="step-2" class="hud-step">
+            <div class="text-line" style="margin-bottom: 6px;">DATE: <span id="clock-date" class="highlight-white"></span></div>
+            <div class="text-line">TIME: <span id="clock-time" class="highlight-white"></span></div>
         </div>
 
-        <div id="step-welcome" class="hidden text-line">
-            <div class="highlight-gold" style="font-size: clamp(1.2rem, 4vw, 1.5rem);">> Welcome Sir / Ma'am <</div>
+        <div id="step-3" class="hud-step">
+            <div class="highlight-gold" style="font-size: clamp(1.2rem, 4vw, 1.5rem); font-weight: bold;">> Welcome Sir / Ma'am <</div>
         </div>
 
-        <div id="step-portfolio" class="hidden text-line">
-            <div class="highlight-white" style="font-size: clamp(1.1rem, 3.5vw, 1.4rem); letter-spacing: 1px;">A STARK DEV</div>
-            <div class="highlight-cyan" style="font-size: clamp(1.1rem, 3.5vw, 1.4rem); letter-spacing: 1px; margin-top: 6px;">CAREER PORTFOLIO</div>
+        <div id="step-4" class="hud-step">
+            <div class="highlight-white" style="font-size: clamp(1.1rem, 3.5vw, 1.4rem); font-weight: 900; letter-spacing: 1px;">A STARK DEV</div>
+            <div class="highlight-cyan" style="font-size: clamp(1.1rem, 3.5vw, 1.4rem); font-weight: 900; letter-spacing: 1px; margin-top: 6px;">CAREER PORTFOLIO</div>
         </div>
         
-        <div id="step-identity" class="hidden" style="width: 100%; display: flex; flex-direction: column; justify-content: center;">
+        <div id="step-5" class="hud-step">
             <div class="name-primary">JAYA KUMAR</div>
             <div class="name-secondary">( S JAYA KUMAR )</div>
             <div class="role-title">> A DEVELOPER <</div>
@@ -351,50 +365,32 @@
             let greetingTime = runClockAndTheme();
             setInterval(runClockAndTheme, 1000);
             
-            // Set dynamic greeting
             document.getElementById('dynamic-time-greet').textContent = `> Good ${greetingTime} <`;
 
-            // Step references
-            const stepTimeGreet = document.getElementById('step-time-greet');
-            const stepDatetime = document.getElementById('step-datetime');
-            const stepWelcome = document.getElementById('step-welcome');
-            const stepPortfolio = document.getElementById('step-portfolio');
-            const stepIdentity = document.getElementById('step-identity');
+            const steps = [
+                document.getElementById('step-1'),
+                document.getElementById('step-2'),
+                document.getElementById('step-3'),
+                document.getElementById('step-4'),
+                document.getElementById('step-5')
+            ];
 
-            // --- 15-SECOND EXACT TIMELINE CHOREOGRAPHY ---
-            // 3.0s: Reveal Date & Time
-            setTimeout(() => { 
-                stepTimeGreet.classList.add('hidden'); 
-                stepDatetime.classList.remove('hidden'); 
-                stepDatetime.classList.add('fade-in'); 
-            }, 3000);
+            function switchStep(fromIndex, toIndex) {
+                steps[fromIndex].classList.remove('active');
+                steps[toIndex].classList.add('active');
+            }
 
-            // 6.0s: Reveal Welcome Sir / Ma'am
-            setTimeout(() => { 
-                stepDatetime.classList.add('hidden'); 
-                stepWelcome.classList.remove('hidden'); 
-                stepWelcome.classList.add('fade-in'); 
-            }, 6000);
+            // --- 12-SECOND SMOOTH STACKED TIMELINE ---
+            setTimeout(() => switchStep(0, 1), 2500); // 2.5s: Show Date & Time
+            setTimeout(() => switchStep(1, 2), 5000); // 5.0s: Welcome Sir/Ma'am
+            setTimeout(() => switchStep(2, 3), 7500); // 7.5s: Portfolio Title
+            setTimeout(() => switchStep(3, 4), 9500); // 9.5s: Name & Identity
 
-            // 9.0s: Reveal A Stark Dev Career Portfolio
-            setTimeout(() => { 
-                stepWelcome.classList.add('hidden'); 
-                stepPortfolio.classList.remove('hidden'); 
-                stepPortfolio.classList.add('fade-in'); 
-            }, 9000);
+            // 11.3s: Trigger cinematic warp exit
+            setTimeout(() => { document.body.classList.add('city-exit'); }, 11300);
 
-            // 12.0s: Reveal Jaya Kumar ( a developer )
-            setTimeout(() => { 
-                stepPortfolio.classList.add('hidden'); 
-                stepIdentity.classList.remove('hidden'); 
-                stepIdentity.classList.add('fade-in'); 
-            }, 12000);
-
-            // 14.3s: Trigger cinematic exit
-            setTimeout(() => { document.body.classList.add('city-exit'); }, 14300);
-
-            // 15.0s: Redirect to landing page
-            setTimeout(() => { window.location.href = 'home.html'; }, 15000);
+            // 12.0s: Redirect to landing page
+            setTimeout(() => { window.location.href = 'home.html'; }, 12000);
         });
     </script>
 </body>
