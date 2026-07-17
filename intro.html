@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stark Dev | Living Command Bridge</title>
+    <title>System Boot | 3D Street</title>
     <style>
-        /* --- GLOBAL RESET & THEME VARIABLES --- */
+        /* --- GLOBAL RESET & DYNAMIC THEME VARIABLES --- */
         * {
             margin: 0;
             padding: 0;
@@ -14,52 +14,45 @@
         }
         
         :root {
-            /* Night / Cyber-Sci-Fi Default (Matches Screenshot) */
-            --sky-top: #01040a;
-            --sky-bottom: #061325;
-            --planet-glow: 0 0 50px rgba(0, 243, 255, 0.4), inset -10px -10px 30px rgba(0, 0, 0, 0.8);
-            --building-bg: linear-gradient(to bottom, #040914 0%, #010307 100%);
-            --win-cyan: rgba(0, 243, 255, 0.85);
-            --win-gold: rgba(255, 183, 0, 0.85);
-            --podium-glow: rgba(0, 243, 255, 0.6);
-            --spore-color: #00f3ff;
-            --road-bg: #030710;
-            --hud-bg: rgba(3, 10, 20, 0.75);
-            --hud-border: rgba(0, 243, 255, 0.45);
-            --text-glow-cyan: 0 0 15px rgba(0, 243, 255, 0.8);
-            --text-glow-gold: 0 0 15px rgba(255, 183, 0, 0.8);
+            /* Night Theme Defaults */
+            --sky-top: #020111;
+            --sky-bottom: #120b2e;
+            --horizon-glow: rgba(0, 243, 255, 0.4);
+            --road-color: #0d0f12;
+            --line-color: rgba(255, 255, 255, 0.6);
+            --building-color: #060810;
+            --window-color: #00f3ff;
+            --window-opacity: 0.8;
+            --star-opacity: 1;
         }
 
-        /* Day Theme - Solarpunk Bright */
+        /* Morning / Day Theme */
         body.theme-day {
-            --sky-top: #1a75cf;
-            --sky-bottom: #65b8ff;
-            --planet-glow: 0 0 60px rgba(255, 255, 255, 0.8), inset -10px -10px 30px rgba(20, 50, 100, 0.5);
-            --building-bg: linear-gradient(to bottom, #10243d 0%, #081424 100%);
-            --win-cyan: rgba(180, 230, 255, 0.6);
-            --win-gold: rgba(255, 220, 150, 0.6);
-            --podium-glow: rgba(0, 180, 255, 0.8);
-            --spore-color: #ffffff;
-            --road-bg: #0c1828;
-            --hud-bg: rgba(10, 25, 45, 0.7);
-            --hud-border: rgba(100, 210, 255, 0.6);
+            --sky-top: #3aacf8;
+            --sky-bottom: #c0e8ff;
+            --horizon-glow: rgba(255, 255, 255, 0.8);
+            --road-color: #2a2e35;
+            --line-color: rgba(255, 255, 255, 0.9);
+            --building-color: #1a222c;
+            --window-color: #8ab4f8; /* Dark tinted daylight glass */
+            --window-opacity: 0.3;
+            --star-opacity: 0;
         }
 
-        /* Sunset Theme - Crimson & Gold Tech */
+        /* Sunset Theme */
         body.theme-sunset {
-            --sky-top: #2b0824;
-            --sky-bottom: #9e2a2b;
-            --planet-glow: 0 0 50px rgba(255, 100, 50, 0.6), inset -10px -10px 30px rgba(30, 0, 10, 0.8);
-            --building-bg: linear-gradient(to bottom, #1c0915 0%, #0a0307 100%);
-            --win-cyan: rgba(255, 130, 0, 0.85);
-            --win-gold: rgba(255, 50, 80, 0.85);
-            --podium-glow: rgba(255, 110, 0, 0.7);
-            --spore-color: #ffaa00;
-            --road-bg: #10050a;
-            --hud-bg: rgba(20, 5, 15, 0.75);
-            --hud-border: rgba(255, 120, 0, 0.5);
+            --sky-top: #5e1358;
+            --sky-bottom: #ff6a00;
+            --horizon-glow: rgba(255, 106, 0, 0.8);
+            --road-color: #140d11;
+            --line-color: rgba(255, 200, 150, 0.7);
+            --building-color: #12080a;
+            --window-color: #ffae00; /* Warm orange sunset windows */
+            --window-opacity: 0.7;
+            --star-opacity: 0.3;
         }
 
+        /* UNLOCKED BODY */
         body {
             background: linear-gradient(to bottom, var(--sky-top), var(--sky-bottom));
             color: #ffffff;
@@ -67,280 +60,202 @@
             width: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
+            padding-top: clamp(8vh, 15vh, 18vh);
             position: relative;
             overflow: hidden;
             transition: background 2s ease-in-out;
         }
 
-        /* --- DEEP SPACE & SKY LAYER --- */
-        .sky-layer {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 1; pointer-events: none;
-        }
-
-        .stars {
-            position: absolute; width: 100%; height: 100%;
-            background-image: 
-                radial-gradient(1px 1px at 10% 15%, #fff 50%, transparent),
-                radial-gradient(1px 1px at 25% 40%, #fff 50%, transparent),
-                radial-gradient(1.5px 1.5px at 45% 20%, #00f3ff 50%, transparent),
-                radial-gradient(1px 1px at 65% 10%, #fff 50%, transparent),
-                radial-gradient(2px 2px at 80% 30%, #ffcf00 50%, transparent),
-                radial-gradient(1px 1px at 90% 60%, #fff 50%, transparent);
-            background-size: 550px 550px;
-            animation: twinkle 5s infinite alternate;
-        }
-        @keyframes twinkle { 0% { opacity: 0.3; } 100% { opacity: 1; } }
-
-        /* Ringed Planet (Right side as in image) */
-        .ringed-planet {
-            position: absolute; top: 15vh; right: 8vw;
-            width: clamp(70px, 10vw, 120px); height: clamp(70px, 10vw, 120px);
-            border-radius: 50%;
-            background: linear-gradient(135deg, #1f4267, #081321);
-            box-shadow: var(--planet-glow);
-            transform: rotate(-15deg);
-            transition: all 2s;
-        }
-        .ringed-planet::after {
-            content: ''; position: absolute; top: 50%; left: -30%;
-            width: 160%; height: 20px;
-            border: 4px solid rgba(0, 243, 255, 0.5);
-            border-radius: 50%;
-            transform: translateY(-50%) rotate(25deg);
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
-        }
-
-        /* --- CITY SKYLINE & HIGHWAY --- */
-        .cityscape {
-            position: absolute; bottom: 18vh; left: 0; width: 100%; height: 35vh;
-            display: flex; align-items: flex-end; justify-content: space-between;
-            z-index: 2; pointer-events: none; opacity: 0.85;
-        }
-
-        .building {
-            flex: 1; height: 100%; background: var(--building-bg);
-            border-top: 1px solid rgba(0, 243, 255, 0.2);
-            border-right: 1px solid rgba(0,0,0,0.8);
-            position: relative; transition: background 2s;
-        }
-        .building::before {
-            content: ''; position: absolute; top: 10px; left: 0; right: 0; bottom: 0;
-            background-position: top center;
-        }
-        .b1 { height: 60%; } .b1::before { background: radial-gradient(circle, var(--win-cyan) 1px, transparent 1.5px) 0 0 / 12px 18px; }
-        .b2 { height: 85%; } .b2::before { background: radial-gradient(circle, var(--win-gold) 1.5px, transparent 2px) 0 0 / 16px 22px; }
-        .b3 { height: 45%; } .b3::before { background: radial-gradient(circle, var(--win-cyan) 1px, transparent 1.5px) 0 0 / 10px 15px; }
-        .b4 { height: 95%; } .b4::before { background: radial-gradient(circle, var(--win-gold) 1.5px, transparent 2px) 0 0 / 18px 26px; }
-        .b5 { height: 70%; } .b5::before { background: radial-gradient(circle, var(--win-cyan) 1px, transparent 1.5px) 0 0 / 14px 20px; }
-
-        .highway {
-            position: absolute; bottom: 12vh; left: 0; width: 100%; height: 6vh;
-            background: var(--road-bg);
-            border-top: 1px solid rgba(0, 243, 255, 0.3);
-            border-bottom: 1px solid rgba(0, 243, 255, 0.3);
-            z-index: 3; overflow: hidden;
-            display: flex; align-items: center;
-        }
-        .car-stream {
-            position: absolute; width: 100%; height: 2px;
-            background: repeating-linear-gradient(90deg, transparent 0, transparent 100px, var(--win-cyan) 100px, var(--win-cyan) 140px, var(--win-gold) 200px, var(--win-gold) 220px);
-            animation: traffic 3s linear infinite;
-        }
-        @keyframes traffic { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-
-        /* --- SCI-FI BIO-TECH FOREGROUND (THE BRIDGE) --- */
-        .bio-frame {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 4; pointer-events: none;
-            display: flex; justify-content: space-between;
-        }
-
-        /* Cybernetic / Neural Pillars on side */
-        .pillar {
-            width: clamp(40px, 8vw, 100px); height: 100%;
-            background: linear-gradient(to side, #02060d, rgba(2, 6, 13, 0.2));
-            position: relative;
-            border-right: 2px solid rgba(0, 243, 255, 0.2);
-            box-shadow: inset -10px 0 20px rgba(0, 243, 255, 0.1);
-        }
-        .pillar.right {
-            border-right: none; border-left: 2px solid rgba(0, 243, 255, 0.2);
-            box-shadow: inset 10px 0 20px rgba(0, 243, 255, 0.1);
-        }
-
-        /* Glowing Neural Nodes on Pillars */
-        .pillar::before, .pillar::after {
-            content: ''; position: absolute; width: 6px; height: 30%;
-            background: var(--podium-glow);
-            border-radius: 4px; box-shadow: 0 0 15px var(--podium-glow);
-            left: 10px; top: 20%;
-            animation: pulseNode 3s infinite alternate;
-        }
-        .pillar::after { top: 65%; height: 20%; animation-delay: 1.5s; }
-        @keyframes pulseNode { 0% { opacity: 0.3; } 100% { opacity: 1; } }
-
-        /* --- 3D HOLOGRAPHIC PODIUM & LIVING ECOSYSTEM --- */
-        .podium-container {
-            position: absolute; bottom: -5vh; left: 50%;
-            transform: translateX(-50%);
-            width: clamp(300px, 60vw, 700px); height: 25vh;
-            z-index: 5; display: flex; justify-content: center; align-items: center;
-            perspective: 600px;
-        }
-
-        .holo-ring {
-            position: absolute; border-radius: 50%;
-            border: 2px solid var(--podium-glow);
-            box-shadow: 0 0 20px var(--podium-glow), inset 0 0 20px var(--podium-glow);
-            transform: rotateX(75deg);
-            animation: spinRing 12s linear infinite;
-        }
-        .ring-1 { width: 100%; height: 100%; border-dasharray: 20px; border-style: dashed; }
-        .ring-2 { width: 75%; height: 75%; border-color: rgba(255, 183, 0, 0.6); animation-direction: reverse; animation-duration: 8s; }
-        .ring-3 { width: 45%; height: 45%; background: radial-gradient(circle, rgba(0, 243, 255, 0.2) 0%, transparent 70%); }
-
-        @keyframes spinRing { 0% { transform: rotateX(75deg) rotateZ(0deg); } 100% { transform: rotateX(75deg) rotateZ(360deg); } }
-
-        /* Floating Bioluminescent Spores */
-        .spores {
-            position: absolute; bottom: 0; width: 100%; height: 100%;
-            z-index: 6; pointer-events: none; overflow: hidden;
-        }
-        .spore {
-            position: absolute; bottom: -10px;
-            width: 4px; height: 4px; border-radius: 50%;
-            background: var(--spore-color);
-            box-shadow: 0 0 10px var(--spore-color), 0 0 20px var(--spore-color);
-            animation: floatUp 4s infinite linear;
-        }
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(0.5); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translateY(-40vh) scale(1.2); opacity: 0; }
-        }
-
-        /* --- STARK HUD CONSOLE (CENTER STAGE) --- */
-        .hud-console {
-            position: relative; z-index: 10;
-            width: 88%; max-width: 540px; min-height: 260px;
-            background: var(--hud-bg);
-            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--hud-border);
-            /* Sci-fi Angled Corners */
-            clip-path: polygon(0 0, 92% 0, 100% 15%, 100% 100%, 8% 100%, 0 85%);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 30px rgba(0, 243, 255, 0.15);
-            padding: clamp(20px, 5vw, 35px);
-            display: grid; place-items: center; text-align: center;
-        }
-
-        /* Corner Decorative Tech Lines */
-        .hud-console::before, .hud-console::after {
-            content: ''; position: absolute; width: 20px; height: 20px;
-            border: 2px solid #00f3ff; pointer-events: none;
-        }
-        .hud-console::before { top: 10px; left: 10px; border-right: none; border-bottom: none; }
-        .hud-console::after { bottom: 10px; right: 10px; border-left: none; border-top: none; }
-
-        .hud-step {
-            grid-area: 1 / 1; width: 100%; opacity: 0;
-            transform: scale(0.95) translateY(10px);
-            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        /* --- 3D ENVIRONMENT ENGINE --- */
+        .viewport-3d {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%; height: 100%;
+            perspective: 800px; /* Creates the deep 1-point street perspective */
+            perspective-origin: 50% 50%;
+            z-index: 1;
+            overflow: hidden;
             pointer-events: none;
         }
-        .hud-step.active {
-            opacity: 1; transform: scale(1) translateY(0);
+
+        /* The Horizon / Sky at the end of the street */
+        .horizon {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150vw; height: 30vh;
+            background: radial-gradient(ellipse at center, var(--horizon-glow) 0%, transparent 60%);
+            filter: blur(20px);
+            z-index: 1;
         }
 
-        /* --- TYPOGRAPHY & STYLES --- */
-        .text-line { font-size: clamp(1rem, 3vw, 1.15rem); font-weight: bold; margin: 6px 0; letter-spacing: 1px; }
-        .glow-cyan { color: #00f3ff; text-shadow: var(--text-glow-cyan); }
-        .glow-gold { color: #ffca00; text-shadow: var(--text-glow-gold); }
-        .glow-white { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.8); }
-        
-        .title-main { font-size: clamp(1.4rem, 4.5vw, 1.9rem); font-weight: 900; letter-spacing: 3px; }
-        .title-sub { font-size: clamp(1.1rem, 3.5vw, 1.4rem); letter-spacing: 2px; margin-top: 4px; }
-        .name-highlight { font-size: clamp(1.5rem, 5vw, 2.2rem); font-weight: 900; letter-spacing: 2px; color: #fff; }
-        
-        /* Warp Exit Animation */
-        .warp-speed { animation: warpOut 0.8s forwards ease-in; }
-        @keyframes warpOut {
-            100% { opacity: 0; transform: scale(1.4); filter: blur(20px); }
+        /* Twinkling Stars */
+        .stars {
+            position: absolute; top: 0; left: 0; width: 100%; height: 60%; z-index: 0; opacity: var(--star-opacity); transition: opacity 2s;
         }
+        .stars::after {
+            content: ''; position: absolute; width: 2px; height: 2px; background: transparent;
+            box-shadow: 10vw 10vh #fff, 20vw 25vh #fff, 30vw 5vh #fff, 40vw 30vh #fff, 70vw 8vh #fff, 80vw 35vh #fff, 90vw 28vh #fff;
+            animation: twinkle 4s infinite alternate;
+        }
+        @keyframes twinkle { 0% { opacity: 0.2; } 100% { opacity: 1; } }
+
+        /* The 3D Road */
+        .street-floor {
+            position: absolute;
+            bottom: -30vh; left: -50vw;
+            width: 200vw; height: 100vh;
+            background-color: var(--road-color);
+            /* Double white lines matching your reference photo */
+            background-image: 
+                linear-gradient(to right, transparent calc(50% - 8px), var(--line-color) calc(50% - 8px), var(--line-color) calc(50% - 2px), transparent calc(50% - 2px), transparent calc(50% + 2px), var(--line-color) calc(50% + 2px), var(--line-color) calc(50% + 8px), transparent calc(50% + 8px)),
+                linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 50%);
+            background-size: 100% 100%, 100% 60px;
+            transform: rotateX(82deg);
+            transform-origin: bottom center;
+            box-shadow: inset 0 0 100px #000;
+            animation: moveRoad 1s linear infinite;
+            z-index: 2;
+        }
+
+        @keyframes moveRoad {
+            0% { background-position: 0 0px; }
+            100% { background-position: 0 60px; }
+        }
+
+        /* The 3D Buildings Flanking the Street */
+        .building-wall {
+            position: absolute;
+            top: -20vh;
+            width: 150vw; height: 120vh;
+            background-color: var(--building-color);
+            border-top: 5px solid #000;
+            /* Generating repeating lit windows */
+            background-image: radial-gradient(circle, var(--window-color) 2px, transparent 3px);
+            background-size: 30px 40px;
+            opacity: 0.95;
+            z-index: 3;
+            transition: background-color 2s;
+        }
+        
+        .building-wall::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,calc(1 - var(--window-opacity)));
+            transition: background 2s;
+        }
+
+        .wall-left {
+            left: -100vw;
+            transform: rotateY(82deg);
+            transform-origin: right center;
+            box-shadow: inset -50px 0 100px rgba(0,0,0,0.9);
+            animation: moveWallsLeft 4s linear infinite;
+        }
+
+        .wall-right {
+            right: -100vw;
+            transform: rotateY(-82deg);
+            transform-origin: left center;
+            box-shadow: inset 50px 0 100px rgba(0,0,0,0.9);
+            animation: moveWallsRight 4s linear infinite;
+        }
+
+        @keyframes moveWallsLeft { 0% { background-position: 0px 0; } 100% { background-position: 120px 0; } }
+        @keyframes moveWallsRight { 0% { background-position: 0px 0; } 100% { background-position: -120px 0; } }
+
+        /* --- STACKED HUD CONSOLE (ZERO EMPTY BOXES) --- */
+        .hud-box {
+            position: relative; z-index: 10;
+            width: 88%; max-width: 480px; min-height: clamp(200px, 25vh, 240px);
+            background: rgba(4, 7, 12, 0.75);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+            padding: clamp(16px, 4vw, 24px);
+            display: grid; /* Grid stacks all steps directly on top of each other */
+            place-items: center;
+            text-align: center;
+        }
+
+        .hud-step {
+            grid-area: 1 / 1;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            transform: translateY(8px);
+            pointer-events: none;
+        }
+
+        .hud-step.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- TYPOGRAPHY & ANIMATIONS --- */
+        .text-line { font-size: clamp(1rem, 3vw, 1.2rem); font-weight: bold; line-height: 1.6; margin: 4px 0; text-shadow: 0 2px 5px rgba(0,0,0,0.9); }
+        .highlight-cyan { color: #00f3ff; text-shadow: 0 0 12px rgba(0,243,255,0.6); }
+        .highlight-white { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.8); }
+        .highlight-gold { color: #ffd700; text-shadow: 0 0 12px rgba(255,215,0,0.6); }
+        
+        .name-primary { font-size: clamp(1.5rem, 4.5vw, 2rem); color: #ffffff; font-weight: 900; letter-spacing: 2px; }
+        .name-secondary { font-size: clamp(0.95rem, 3vw, 1.2rem); color: #00f3ff; font-weight: bold; margin-top: 6px; }
+        .role-title { font-size: clamp(0.85rem, 2.8vw, 1.1rem); color: #ffd700; font-weight: 800; margin-top: 12px; letter-spacing: 1.5px; text-transform: uppercase; }
+
+        .warp-exit { animation: warpOut 0.8s forwards; }
+        @keyframes warpOut { 100% { opacity: 0; filter: blur(12px) brightness(3); transform: scale(1.5); } }
     </style>
 </head>
-<body class="theme-night" id="body-theme">
+<body class="theme-night" id="dynamic-body">
 
-    <div class="sky-layer">
+    <!-- 3D Perspective Street Environment -->
+    <div class="viewport-3d">
         <div class="stars"></div>
-        <div class="ringed-planet"></div>
+        <div class="horizon"></div>
+        <div class="building-wall wall-left"></div>
+        <div class="building-wall wall-right"></div>
+        <div class="street-floor"></div>
     </div>
 
-    <div class="cityscape">
-        <div class="building b1"></div><div class="building b2"></div>
-        <div class="building b3"></div><div class="building b4"></div>
-        <div class="building b5"></div>
-    </div>
-    <div class="highway"><div class="car-stream"></div></div>
-
-    <div class="bio-frame">
-        <div class="pillar left"></div>
-        <div class="pillar right"></div>
-    </div>
-
-    <div class="podium-container">
-        <div class="holo-ring ring-1"></div>
-        <div class="holo-ring ring-2"></div>
-        <div class="holo-ring ring-3"></div>
-    </div>
-    
-    <div class="spores" id="spore-container"></div>
-
-    <div class="hud-console">
+    <!-- Smooth Stacked HUD Console -->
+    <div class="hud-box" id="hud">
         
+        <!-- Step 1: Time of Day Greeting (0s - 2.5s) -->
         <div id="step-1" class="hud-step active">
-            <div id="live-greeting" class="glow-cyan title-main">> Good Evening <</div>
+            <div id="dynamic-time-greet" class="highlight-cyan" style="font-size: clamp(1.2rem, 4vw, 1.5rem); font-weight: bold;"></div>
         </div>
 
+        <!-- Step 2: Date & Time (2.5s - 5s) -->
         <div id="step-2" class="hud-step">
-            <div class="text-line">DATE: <span id="clock-date" class="glow-white"></span></div>
-            <div class="text-line">TIME: <span id="clock-time" class="glow-white"></span></div>
+            <div class="text-line" style="margin-bottom: 6px;">DATE: <span id="clock-date" class="highlight-white"></span></div>
+            <div class="text-line">TIME: <span id="clock-time" class="highlight-white"></span></div>
         </div>
 
+        <!-- Step 3: Welcome Sir / Ma'am (5s - 7.5s) -->
         <div id="step-3" class="hud-step">
-            <div class="glow-gold title-main">> Welcome Sir / Ma'am <</div>
+            <div class="highlight-gold" style="font-size: clamp(1.2rem, 4vw, 1.5rem); font-weight: bold;">> Welcome Sir / Ma'am <</div>
         </div>
 
+        <!-- Step 4: Portfolio Title (7.5s - 9.5s) -->
         <div id="step-4" class="hud-step">
-            <div class="glow-white title-main">A STARK DEV</div>
-            <div class="glow-cyan title-sub font-weight-bold">CAREER PORTFOLIO</div>
+            <div class="highlight-white" style="font-size: clamp(1.1rem, 3.5vw, 1.4rem); font-weight: 900; letter-spacing: 1px;">A STARK DEV</div>
+            <div class="highlight-cyan" style="font-size: clamp(1.1rem, 3.5vw, 1.4rem); font-weight: 900; letter-spacing: 1px; margin-top: 6px;">CAREER PORTFOLIO</div>
         </div>
         
+        <!-- Step 5: Name & Developer Identity (9.5s - 12s) -->
         <div id="step-5" class="hud-step">
-            <div class="name-highlight glow-white">JAYA KUMAR</div>
-            <div class="glow-cyan text-line">( S JAYA KUMAR )</div>
-            <div class="glow-gold text-line" style="margin-top: 12px;">> A DEVELOPER <</div>
+            <div class="name-primary">JAYA KUMAR</div>
+            <div class="name-secondary">( S JAYA KUMAR )</div>
+            <div class="role-title">> A DEVELOPER <</div>
         </div>
 
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // 1. Generate Bioluminescent Spores dynamically
-            const sporeContainer = document.getElementById('spore-container');
-            for (let i = 0; i < 25; i++) {
-                let spore = document.createElement('div');
-                spore.className = 'spore';
-                spore.style.left = `${Math.random() * 100}%`;
-                spore.style.animationDelay = `${Math.random() * 4}s`;
-                spore.style.animationDuration = `${3 + Math.random() * 3}s`;
-                sporeContainer.appendChild(spore);
-            }
-
-            // 2. Real-Time Clock & Dynamic Living Theme Switcher
-            function updateSystem() {
+            function runClockAndTheme() {
                 const now = new Date();
                 const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
                 const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
@@ -350,28 +265,28 @@
                 if (dateEl) dateEl.textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
                 if (timeEl) timeEl.textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')} IST`;
 
-                const hour = now.getHours();
-                const body = document.getElementById('body-theme');
+                const currentHour = now.getHours();
+                const body = document.getElementById('dynamic-body');
                 body.classList.remove('theme-day', 'theme-sunset', 'theme-night');
 
-                let timeText = "Evening";
-                if (hour >= 6 && hour < 16) {
+                let timeOfDay = "Evening";
+                if (currentHour >= 6 && currentHour < 16) {
                     body.classList.add('theme-day');
-                    timeText = hour >= 12 ? "Afternoon" : "Morning";
-                } else if (hour >= 16 && hour < 19) {
+                    timeOfDay = currentHour >= 12 ? "Afternoon" : "Morning";
+                } else if (currentHour >= 16 && currentHour < 19) {
                     body.classList.add('theme-sunset');
                 } else {
                     body.classList.add('theme-night');
-                    if(hour >= 0 && hour < 6) timeText = "Morning";
+                    if(currentHour >= 0 && currentHour < 6) timeOfDay = "Morning";
                 }
-                return timeText;
+                return timeOfDay;
             }
 
-            let currentGreet = updateSystem();
-            setInterval(updateSystem, 1000);
-            document.getElementById('live-greeting').textContent = `> Good ${currentGreet} <`;
+            let greetingTime = runClockAndTheme();
+            setInterval(runClockAndTheme, 1000);
+            
+            document.getElementById('dynamic-time-greet').textContent = `> Good ${greetingTime} <`;
 
-            // 3. Sequential HUD Timeline (Smooth 12-Second Flow)
             const steps = [
                 document.getElementById('step-1'),
                 document.getElementById('step-2'),
@@ -380,20 +295,21 @@
                 document.getElementById('step-5')
             ];
 
-            function switchStep(from, to) {
-                steps[from].classList.remove('active');
-                steps[to].classList.add('active');
+            function switchStep(fromIndex, toIndex) {
+                steps[fromIndex].classList.remove('active');
+                steps[toIndex].classList.add('active');
             }
 
-            setTimeout(() => switchStep(0, 1), 2400); // 2.4s: Show Date/Time
-            setTimeout(() => switchStep(1, 2), 4800); // 4.8s: Welcome Sir/Ma'am
-            setTimeout(() => switchStep(2, 3), 7200); // 7.2s: Stark Dev Portfolio
-            setTimeout(() => switchStep(3, 4), 9300); // 9.3s: Jaya Kumar Identity
+            // --- 12-SECOND SMOOTH STACKED TIMELINE ---
+            setTimeout(() => switchStep(0, 1), 2500); // 2.5s: Show Date & Time
+            setTimeout(() => switchStep(1, 2), 5000); // 5.0s: Welcome Sir/Ma'am
+            setTimeout(() => switchStep(2, 3), 7500); // 7.5s: Portfolio Title
+            setTimeout(() => switchStep(3, 4), 9500); // 9.5s: Name & Identity
 
-            // 11.2s: Trigger Warp Drive Exit Animation
-            setTimeout(() => { document.body.classList.add('warp-speed'); }, 11200);
+            // 11.3s: Trigger cinematic warp exit straight down the street
+            setTimeout(() => { document.body.classList.add('warp-exit'); }, 11300);
 
-            // 12.0s: Redirect to Home Page
+            // 12.0s: Redirect to landing page
             setTimeout(() => { window.location.href = 'home.html'; }, 12000);
         });
     </script>
