@@ -1,1 +1,55 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jack | Portfolio Hub</title>
+    <style>
+        body { background: #050505; color: #fff; font-family: monospace; margin: 0; }
+        nav { padding: 20px; border-bottom: 1px solid #333; display: flex; gap: 15px; background: #0a0a0a; }
+        button { background: #111; color: #00f3ff; padding: 10px 15px; cursor: pointer; border: 1px solid #00f3ff; border-radius: 4px; font-weight: bold; }
+        button:hover { background: rgba(0, 243, 255, 0.2); }
+        
+        #display-screen { padding: 40px; max-width: 800px; margin: auto; }
+        .fade-in { animation: fadeIn 0.4s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation commands point to your specific GitHub folders -->
+    <nav>
+        <button onclick="loadPage('../Career/career.html')">Career</button>
+        <button onclick="loadPage('../Passoined/projects.html')">Projects</button>
+        <button onclick="loadPage('../Vibes/gallery.html')">Vibes</button>
+        <button onclick="loadPage('../Game/game.html')">Game</button>
+        <button onclick="loadPage('../Connect/connect.html')">Connect</button>
+    </nav>
+
+    <!-- The screen where the fetched HTML files will appear -->
+    <main id="display-screen">
+        <h1 style="color: #00f3ff;">> SYSTEM ONLINE</h1>
+        <p>Welcome to the central hub. Select a directory above to execute.</p>
+    </main>
+
+    <!-- The Fetch Logic -->
+    <script>
+        function loadPage(filePath) {
+            fetch(filePath)
+                .then(response => {
+                    if (!response.ok) throw new Error("File not found");
+                    return response.text();
+                })
+                .then(data => {
+                    const screen = document.getElementById('display-screen');
+                    // Inject the raw HTML from the other folders
+                    screen.innerHTML = `<div class="fade-in">${data}</div>`;
+                })
+                .catch(error => {
+                    document.getElementById('display-screen').innerHTML = `<p style="color: red;">> ERROR: ${error.message}</p>`;
+                });
+        }
+    </script>
+</body>
+</html>
