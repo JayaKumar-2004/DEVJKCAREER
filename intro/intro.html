@@ -3,29 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Boot | Stark Dev</title>
-    <!-- Automatically redirects to the home folder after 3 seconds -->
-    <meta http-equiv="refresh" content="3;url=../home/home.html">
+    <title>JK | System Boot</title>
     <style>
+        /* --- GLOBAL --- */
         body {
-            background-color: #020408;
-            color: #00f3ff;
+            margin: 0; padding: 0; 
+            background-color: #020408; /* Deep backend dark */
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; overflow: hidden; 
             font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
         }
-        .boot-text {
-            font-size: 1.5rem;
-            animation: blink 1s infinite;
+
+        /* --- TEXT CONTAINER --- */
+        #text-container {
+            position: absolute; z-index: 10;
+            font-size: 2.5rem; text-align: center;
+            opacity: 0; 
+            transition: opacity 1s ease-in-out;
+            font-weight: bold;
+            color: #00f3ff;
+            text-shadow: 0 0 15px rgba(0, 243, 255, 0.6);
         }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* --- VIDEO CONTAINER --- */
+        #intro-video {
+            position: absolute; top: 0; left: 0; 
+            width: 100%; height: 100%;
+            object-fit: cover; 
+            opacity: 0; 
+            transition: opacity 1.5s ease-in-out;
+            z-index: 1;
+        }
     </style>
 </head>
 <body>
-    <div class="boot-text">> INITIALIZING STARK PROTOCOL...</div>
+
+    <!-- 1. The Text Sequence Layer -->
+    <div id="text-container"></div>
+
+    <!-- 2. The Video Layer (Hidden until text finishes) -->
+    <video id="intro-video" muted playsinline>
+        <!-- BUDDY: Put your actual video file name here when you upload it to GitHub! -->
+        <source src="PLACEHOLDER_VIDEO_NAME.mp4" type="video/mp4">
+    </video>
+
+    <script>
+        // 1. Calculate Time Greeting
+        const hour = new Date().getHours();
+        let greeting = "Good Evening.";
+        if (hour >= 5 && hour < 12) greeting = "Good Morning.";
+        else if (hour >= 12 && hour < 18) greeting = "Good Afternoon.";
+
+        // 2. The Cinematic Text Sequence
+        const sequence = [
+            greeting,
+            "ಸ್ವಾಗತ",        // Kannada
+            "स्वागत है",     // Hindi
+            "Welcome to"     // English
+        ];
+
+        const textContainer = document.getElementById('text-container');
+        const video = document.getElementById('intro-video');
+        let currentIndex = 0;
+
+        function playSequence() {
+            if (currentIndex < sequence.length) {
+                // Change the text and fade it in
+                textContainer.textContent = sequence[currentIndex];
+                textContainer.style.opacity = 1;
+
+                // Wait 1.5 seconds, then fade it out
+                setTimeout(() => {
+                    textContainer.style.opacity = 0;
+                    currentIndex++;
+                    
+                    // Wait 1 second while screen is black, then trigger next text
+                    setTimeout(playSequence, 1000);
+                }, 1500);
+            } else {
+                // 3. Text sequence is done. Fade in and play the video.
+                video.style.opacity = 1;
+                
+                // Play the video. (The catch block prevents errors if the video is missing)
+                video.play().catch(error => {
+                    console.log("Video not found or blocked. Routing to home...");
+                    // Fallback: If no video is found, route to home after 2 seconds
+                    setTimeout(() => { window.location.href = '../home/home.html'; }, 2000);
+                });
+            }
+        }
+
+        // Start the sequence half a second after the page loads
+        setTimeout(playSequence, 500);
+
+        // 4. Route to the Home Folder exactly when the video ends
+        video.addEventListener('ended', () => {
+            // Fade to black
+            video.style.opacity = 0;
+            
+            // Route to your main SPA
+            setTimeout(() => {
+                window.location.href = '../home/home.html';
+            }, 1000);
+        });
+    </script>
 </body>
 </html>
-
